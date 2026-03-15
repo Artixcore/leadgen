@@ -13,9 +13,6 @@
     @stack('styles')
 </head>
 <body>
-    <div class="splash active">
-        <div class="splash-icon"></div>
-    </div>
 
     <div class="wrapper">
         @include('admin.partials.sidebar')
