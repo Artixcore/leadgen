@@ -9,6 +9,7 @@
 /.idea
 /.nova
 test.txt
+adminpanel
 /.phpunit.cache
 /.vscode
 /.zed
