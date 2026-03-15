@@ -106,4 +106,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(SavedFilter::class, 'user_id');
     }
+
+    public function planUsages(): HasMany
+    {
+        return $this->hasMany(PlanUsage::class);
+    }
 }

@@ -12,7 +12,7 @@ class LeadPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('search-leads');
+        return $user->can('search-leads') || $user->can('manage-leads');
     }
 
     /**
@@ -20,7 +20,7 @@ class LeadPolicy
      */
     public function view(User $user, Lead $lead): bool
     {
-        return $user->can('search-leads');
+        return $user->can('search-leads') || $user->can('manage-leads');
     }
 
     /**

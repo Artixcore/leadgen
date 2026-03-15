@@ -1,11 +1,20 @@
 <?php
 
+use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Admin\CountryController as AdminCountryController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\LeadController as AdminLeadController;
 use App\Http\Controllers\Admin\LeadImportRunController;
 use App\Http\Controllers\Admin\LeadSourceController;
+use App\Http\Controllers\Admin\NotificationController as AdminNotificationController;
+use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\PlanController;
+use App\Http\Controllers\Admin\ReportController as AdminReportController;
+use App\Http\Controllers\Admin\RoleController as AdminRoleController;
+use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\Admin\SubscriptionController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\LeadBookmarkController;
@@ -43,6 +52,10 @@ Route::middleware(['auth', 'active'])->group(function () {
 Route::get('/dashboard', fn () => view('dashboard'))
     ->middleware(['auth', 'verified', 'active', 'onboarding.completed', 'role:user'])
     ->name('dashboard');
+
+Route::get('/analytics', [AnalyticsController::class, 'index'])
+    ->middleware(['auth', 'verified', 'active', 'onboarding.completed', 'role:user'])
+    ->name('analytics.index');
 
 Route::middleware(['auth', 'verified', 'active', 'onboarding.completed', 'role:user', 'permission:search-leads'])
     ->prefix('leads')
@@ -106,6 +119,36 @@ Route::middleware(['auth', 'active', 'onboarding.completed', 'role:admin'])->pre
     });
     Route::get('plans', [PlanController::class, 'index'])->name('plans.index')->middleware('permission:manage-subscription-plans');
     Route::get('subscriptions', [SubscriptionController::class, 'index'])->name('subscriptions.index')->middleware('permission:manage-payments');
+    Route::get('payments', [AdminPaymentController::class, 'index'])->name('payments.index')->middleware('permission:manage-payments');
+    Route::middleware('permission:view-reports')->prefix('reports')->name('reports.')->group(function () {
+        Route::get('/', [AdminReportController::class, 'index'])->name('index');
+        Route::get('leads-over-time', [AdminReportController::class, 'leadsOverTime'])->name('leads-over-time');
+        Route::get('source-performance', [AdminReportController::class, 'sourcePerformance'])->name('source-performance');
+        Route::get('most-active-users', [AdminReportController::class, 'mostActiveUsers'])->name('most-active-users');
+        Route::get('revenue-by-month', [AdminReportController::class, 'revenueByMonth'])->name('revenue-by-month');
+        Route::get('plan-distribution', [AdminReportController::class, 'planDistribution'])->name('plan-distribution');
+        Route::get('export-usage-trends', [AdminReportController::class, 'exportUsageTrends'])->name('export-usage-trends');
+        Route::get('lead-verification-trends', [AdminReportController::class, 'leadVerificationTrends'])->name('lead-verification-trends');
+    });
+    Route::middleware('permission:manage-settings')->prefix('settings')->name('settings.')->group(function () {
+        Route::get('/', [AdminSettingController::class, 'index'])->name('index');
+        Route::put('/', [AdminSettingController::class, 'update'])->name('update');
+    });
+    Route::get('notifications', [AdminNotificationController::class, 'index'])->name('notifications.index');
+    Route::middleware('permission:manage-users')->group(function () {
+        Route::get('roles', [AdminRoleController::class, 'index'])->name('roles.index');
+        Route::get('roles/{role}/edit', [AdminRoleController::class, 'edit'])->name('roles.edit');
+        Route::put('roles/{role}', [AdminRoleController::class, 'update'])->name('roles.update');
+    });
+    Route::middleware('permission:manage-leads')->group(function () {
+        Route::resource('leads', AdminLeadController::class)->only(['index', 'show', 'edit', 'update']);
+    });
+    Route::middleware('permission:manage-categories')->group(function () {
+        Route::resource('categories', AdminCategoryController::class)->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy']);
+    });
+    Route::middleware('permission:manage-countries')->group(function () {
+        Route::resource('countries', AdminCountryController::class)->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy']);
+    });
 });
 
 require __DIR__.'/auth.php';

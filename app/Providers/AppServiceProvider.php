@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Events\ImportRunFailed;
 use App\Listeners\NotifyAdminOfImportFailure;
+use App\Listeners\StorePaymentFromInvoicePaidWebhook;
 use App\Listeners\SyncSubscriptionPlanIdFromWebhook;
 use App\Models\Lead;
 use App\Models\Subscription;
@@ -32,6 +33,7 @@ class AppServiceProvider extends ServiceProvider
         Lead::observe(LeadObserver::class);
 
         Event::listen(WebhookHandled::class, SyncSubscriptionPlanIdFromWebhook::class);
+        Event::listen(WebhookHandled::class, StorePaymentFromInvoicePaidWebhook::class);
         Event::listen(ImportRunFailed::class, NotifyAdminOfImportFailure::class);
     }
 }

@@ -44,6 +44,7 @@ class SearchLeadsRequest extends FormRequest
             'sort' => ['sometimes', 'nullable', 'string', 'in:newest,highest_quality,most_relevant'],
             'sort_dir' => ['sometimes', 'nullable', 'string', 'in:asc,desc'],
             'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
+            'saved_filter_id' => ['sometimes', 'nullable', 'integer', 'exists:saved_filters,id'],
         ];
     }
 }

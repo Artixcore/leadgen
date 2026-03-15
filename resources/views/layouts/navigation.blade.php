@@ -14,14 +14,34 @@
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     @role('admin')
                         <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
-                            {{ __('Admin') }}
+                            {{ __('Dashboard') }}
                         </x-nav-link>
-                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
-                            {{ __('Users') }}
-                        </x-nav-link>
+                        @can('manage-users')
+                            <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
+                                {{ __('Users') }}
+                            </x-nav-link>
+                            <x-nav-link :href="route('admin.roles.index')" :active="request()->routeIs('admin.roles.*')">
+                                {{ __('Roles') }}
+                            </x-nav-link>
+                        @endcan
+                        @can('manage-leads')
+                            <x-nav-link :href="route('admin.leads.index')" :active="request()->routeIs('admin.leads.*')">
+                                {{ __('Leads') }}
+                            </x-nav-link>
+                        @endcan
                         @can('manage-lead-sources')
                             <x-nav-link :href="route('admin.lead-sources.index')" :active="request()->routeIs('admin.lead-sources.*')">
-                                {{ __('Lead Sources') }}
+                                {{ __('Sources') }}
+                            </x-nav-link>
+                        @endcan
+                        @can('manage-categories')
+                            <x-nav-link :href="route('admin.categories.index')" :active="request()->routeIs('admin.categories.*')">
+                                {{ __('Categories') }}
+                            </x-nav-link>
+                        @endcan
+                        @can('manage-countries')
+                            <x-nav-link :href="route('admin.countries.index')" :active="request()->routeIs('admin.countries.*')">
+                                {{ __('Countries') }}
                             </x-nav-link>
                         @endcan
                         @can('manage-subscription-plans')
@@ -33,11 +53,30 @@
                             <x-nav-link :href="route('admin.subscriptions.index')" :active="request()->routeIs('admin.subscriptions.*')">
                                 {{ __('Subscriptions') }}
                             </x-nav-link>
+                            <x-nav-link :href="route('admin.payments.index')" :active="request()->routeIs('admin.payments.*')">
+                                {{ __('Payments') }}
+                            </x-nav-link>
+                        @endcan
+                        <x-nav-link :href="route('admin.notifications.index')" :active="request()->routeIs('admin.notifications.*')">
+                            {{ __('Notifications') }}
+                        </x-nav-link>
+                        @can('view-reports')
+                            <x-nav-link :href="route('admin.reports.index')" :active="request()->routeIs('admin.reports.*')">
+                                {{ __('Reports') }}
+                            </x-nav-link>
+                        @endcan
+                        @can('manage-settings')
+                            <x-nav-link :href="route('admin.settings.index')" :active="request()->routeIs('admin.settings.*')">
+                                {{ __('Settings') }}
+                            </x-nav-link>
                         @endcan
                     @endrole
                     @role('user')
                         <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                             {{ __('Dashboard') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('analytics.index')" :active="request()->routeIs('analytics.*')">
+                            {{ __('Analytics') }}
                         </x-nav-link>
                         @can('search-leads')
                             <x-nav-link :href="route('leads.index')" :active="request()->routeIs('leads.*')">
@@ -110,26 +149,42 @@
         <div class="pt-2 pb-3 space-y-1">
             @role('admin')
                 <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
-                    {{ __('Admin') }}
+                    {{ __('Dashboard') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
-                    {{ __('Users') }}
-                </x-responsive-nav-link>
+                @can('manage-users')
+                    <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">{{ __('Users') }}</x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('admin.roles.index')" :active="request()->routeIs('admin.roles.*')">{{ __('Roles') }}</x-responsive-nav-link>
+                @endcan
+                @can('manage-leads')
+                    <x-responsive-nav-link :href="route('admin.leads.index')" :active="request()->routeIs('admin.leads.*')">{{ __('Leads') }}</x-responsive-nav-link>
+                @endcan
+                @can('manage-lead-sources')
+                    <x-responsive-nav-link :href="route('admin.lead-sources.index')" :active="request()->routeIs('admin.lead-sources.*')">{{ __('Sources') }}</x-responsive-nav-link>
+                @endcan
+                @can('manage-categories')
+                    <x-responsive-nav-link :href="route('admin.categories.index')" :active="request()->routeIs('admin.categories.*')">{{ __('Categories') }}</x-responsive-nav-link>
+                @endcan
+                @can('manage-countries')
+                    <x-responsive-nav-link :href="route('admin.countries.index')" :active="request()->routeIs('admin.countries.*')">{{ __('Countries') }}</x-responsive-nav-link>
+                @endcan
                 @can('manage-subscription-plans')
-                    <x-responsive-nav-link :href="route('admin.plans.index')" :active="request()->routeIs('admin.plans.*')">
-                        {{ __('Plans') }}
-                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('admin.plans.index')" :active="request()->routeIs('admin.plans.*')">{{ __('Plans') }}</x-responsive-nav-link>
                 @endcan
                 @can('manage-payments')
-                    <x-responsive-nav-link :href="route('admin.subscriptions.index')" :active="request()->routeIs('admin.subscriptions.*')">
-                        {{ __('Subscriptions') }}
-                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('admin.subscriptions.index')" :active="request()->routeIs('admin.subscriptions.*')">{{ __('Subscriptions') }}</x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('admin.payments.index')" :active="request()->routeIs('admin.payments.*')">{{ __('Payments') }}</x-responsive-nav-link>
+                @endcan
+                <x-responsive-nav-link :href="route('admin.notifications.index')" :active="request()->routeIs('admin.notifications.*')">{{ __('Notifications') }}</x-responsive-nav-link>
+                @can('view-reports')
+                    <x-responsive-nav-link :href="route('admin.reports.index')" :active="request()->routeIs('admin.reports.*')">{{ __('Reports') }}</x-responsive-nav-link>
+                @endcan
+                @can('manage-settings')
+                    <x-responsive-nav-link :href="route('admin.settings.index')" :active="request()->routeIs('admin.settings.*')">{{ __('Settings') }}</x-responsive-nav-link>
                 @endcan
             @endrole
             @role('user')
-                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                    {{ __('Dashboard') }}
-                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">{{ __('Dashboard') }}</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('analytics.index')" :active="request()->routeIs('analytics.*')">{{ __('Analytics') }}</x-responsive-nav-link>
             @endrole
             <x-responsive-nav-link :href="route('billing.index')" :active="request()->routeIs('billing.*')">
                 {{ __('Billing') }}

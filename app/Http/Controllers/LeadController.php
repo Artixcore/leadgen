@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SearchLeadsRequest;
 use App\Http\Requests\UpdateLeadStatusRequest;
 use App\Models\Lead;
+use App\Models\SavedFilter;
 use App\Services\SubscriptionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -53,6 +54,13 @@ class LeadController extends Controller
         }
 
         $savedFilters = $request->user()->savedFilters()->orderBy('name')->get();
+
+        if (! empty($validated['saved_filter_id'])) {
+            $savedFilter = SavedFilter::where('id', $validated['saved_filter_id'])->where('user_id', $request->user()->id)->first();
+            if ($savedFilter) {
+                $savedFilter->increment('usage_count');
+            }
+        }
 
         return view('leads.index', [
             'leads' => $leads,

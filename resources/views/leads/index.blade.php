@@ -177,7 +177,7 @@
                                 <ul class="flex flex-wrap gap-2">
                                     @foreach ($savedFilters as $sf)
                                         <li class="inline-flex items-center gap-1 rounded-md bg-gray-100 px-2 py-1 text-sm">
-                                            <a href="{{ route('leads.index', $sf->criteria) }}" class="text-indigo-600 hover:text-indigo-900">{{ $sf->name }}</a>
+                                            <a href="{{ route('leads.index', array_merge($sf->criteria ?? [], ['saved_filter_id' => $sf->id])) }}" class="text-indigo-600 hover:text-indigo-900">{{ $sf->name }}</a>
                                             <form method="POST" action="{{ route('leads.saved-filters.destroy', $sf) }}" class="inline" onsubmit="return confirm('{{ __('Delete this saved filter?') }}');">
                                                 @csrf
                                                 @method('DELETE')

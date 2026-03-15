@@ -11,6 +11,7 @@ class SavedFilter extends Model
         'user_id',
         'name',
         'criteria',
+        'usage_count',
     ];
 
     /**
@@ -20,6 +21,7 @@ class SavedFilter extends Model
     {
         return [
             'criteria' => 'array',
+            'usage_count' => 'integer',
         ];
     }
 
