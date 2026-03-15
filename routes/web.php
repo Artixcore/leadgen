@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\LeadCollectorRuleController;
 use App\Http\Controllers\Admin\LeadCollectorRunController;
 use App\Http\Controllers\Admin\LeadController as AdminLeadController;
 use App\Http\Controllers\Admin\LeadImportRunController;
+use App\Http\Controllers\Admin\LeadSearchAdminController;
 use App\Http\Controllers\Admin\LeadSourceController;
 use App\Http\Controllers\Admin\NotificationController as AdminNotificationController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
@@ -28,6 +29,7 @@ use App\Http\Controllers\LeadExportController;
 use App\Http\Controllers\LeadListController;
 use App\Http\Controllers\LeadNoteController;
 use App\Http\Controllers\LeadReminderController;
+use App\Http\Controllers\LeadSearchController;
 use App\Http\Controllers\LeadTagController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OnboardingController;
@@ -76,6 +78,20 @@ Route::get('/exports/{export}/download', [LeadExportController::class, 'download
 Route::get('/notifications', [NotificationController::class, 'index'])
     ->middleware(['auth', 'verified', 'active', 'onboarding.completed', 'role:user', 'throttle:web'])
     ->name('notifications.index');
+
+Route::middleware(['auth', 'verified', 'active', 'onboarding.completed', 'role:user', 'permission:use-lead-search', 'throttle:web'])
+    ->prefix('lead-search')
+    ->name('lead-search.')
+    ->group(function () {
+        Route::get('/', [LeadSearchController::class, 'index'])->name('index');
+        Route::post('/run', [LeadSearchController::class, 'run'])->name('run');
+        Route::get('/results/{query}', [LeadSearchController::class, 'results'])->name('results');
+        Route::get('/history', [LeadSearchController::class, 'history'])->name('history');
+        Route::get('/saved', [LeadSearchController::class, 'saved'])->name('saved');
+        Route::post('/saved', [LeadSearchController::class, 'storeSavedSearch'])->name('saved.store');
+        Route::delete('/saved/{savedLeadSearch}', [LeadSearchController::class, 'destroySavedSearch'])->name('saved.destroy');
+        Route::post('/saved/{savedLeadSearch}/run', [LeadSearchController::class, 'runSavedSearch'])->name('saved.run');
+    });
 
 Route::middleware(['auth', 'verified', 'active', 'onboarding.completed', 'role:user', 'permission:search-leads', 'throttle:web'])
     ->prefix('leads')
@@ -171,6 +187,14 @@ Route::middleware(['auth', 'active', 'onboarding.completed', 'role:admin', 'thro
         Route::get('roles', [AdminRoleController::class, 'index'])->name('roles.index');
         Route::get('roles/{role}/edit', [AdminRoleController::class, 'edit'])->name('roles.edit');
         Route::put('roles/{role}', [AdminRoleController::class, 'update'])->name('roles.update');
+    });
+    Route::middleware('permission:manage-lead-search')->prefix('lead-search')->name('lead-search.')->group(function () {
+        Route::get('analytics', [LeadSearchAdminController::class, 'analytics'])->name('analytics');
+        Route::get('providers', [LeadSearchAdminController::class, 'providers'])->name('providers');
+        Route::put('providers/{provider}', [LeadSearchAdminController::class, 'updateProvider'])->name('providers.update');
+        Route::get('query-logs', [LeadSearchAdminController::class, 'queryLogs'])->name('query-logs');
+        Route::get('query-logs/{query}/results', [LeadSearchAdminController::class, 'showResults'])->name('query-logs.results');
+        Route::get('saved-searches', [LeadSearchAdminController::class, 'savedSearches'])->name('saved-searches');
     });
     Route::middleware('permission:manage-leads')->group(function () {
         Route::resource('leads', AdminLeadController::class)->only(['index', 'show', 'edit', 'update']);

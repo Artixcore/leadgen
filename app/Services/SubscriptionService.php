@@ -44,6 +44,7 @@ class SubscriptionService
             [
                 'leads_count' => 0,
                 'exports_count' => 0,
+                'lead_search_count' => 0,
             ]
         );
     }
@@ -102,5 +103,38 @@ class SubscriptionService
     {
         $usage = $this->getUsageForCurrentPeriod($user);
         $usage->increment('exports_count');
+    }
+
+    public function userCanUseLeadSearch(User $user, int $count = 1): bool
+    {
+        $plan = $this->getPlanForUser($user);
+        $limit = $plan->leadSearchSearchesLimit();
+        if ($limit === null) {
+            return true;
+        }
+        $usage = $this->getUsageForCurrentPeriod($user);
+
+        return ($usage->lead_search_count + $count) <= $limit;
+    }
+
+    public function userCanSaveLeadSearch(User $user, int $currentSavedCount): bool
+    {
+        $plan = $this->getPlanForUser($user);
+
+        return $currentSavedCount < $plan->savedLeadSearchesLimit();
+    }
+
+    /**
+     * @return int|null Null means unlimited.
+     */
+    public function leadSearchLimit(User $user): ?int
+    {
+        return $this->getPlanForUser($user)->leadSearchSearchesLimit();
+    }
+
+    public function incrementLeadSearchCount(User $user, int $count = 1): void
+    {
+        $usage = $this->getUsageForCurrentPeriod($user);
+        $usage->increment('lead_search_count', $count);
     }
 }

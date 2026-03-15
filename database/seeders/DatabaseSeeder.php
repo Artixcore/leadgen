@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             PlanSeeder::class,
             LeadSourceSeeder::class,
             LeadCollectorSeeder::class,
+            LeadSearchProviderSeeder::class,
             LeadSeeder::class,
         ]);
     }

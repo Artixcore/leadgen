@@ -81,6 +81,22 @@
             </li>
             @endcan
 
+            @can('manage-lead-search')
+            @php $leadSearchActive = request()->routeIs('admin.lead-search.*'); @endphp
+            <li class="sidebar-item {{ $leadSearchActive ? 'active' : '' }}">
+                <a data-bs-target="#lead-search-menu" data-bs-toggle="collapse" class="sidebar-link {{ $leadSearchActive ? '' : 'collapsed' }}">
+                    <i class="align-middle me-2 fas fa-fw fa-search"></i>
+                    <span class="align-middle">{{ __('Lead Search') }}</span>
+                </a>
+                <ul id="lead-search-menu" class="sidebar-dropdown list-unstyled collapse {{ $leadSearchActive ? 'show' : '' }}" data-bs-parent="#sidebar">
+                    <li class="sidebar-item"><a class="sidebar-link {{ request()->routeIs('admin.lead-search.analytics') ? 'active' : '' }}" href="{{ route('admin.lead-search.analytics') }}">{{ __('Analytics') }}</a></li>
+                    <li class="sidebar-item"><a class="sidebar-link {{ request()->routeIs('admin.lead-search.providers*') ? 'active' : '' }}" href="{{ route('admin.lead-search.providers') }}">{{ __('Providers') }}</a></li>
+                    <li class="sidebar-item"><a class="sidebar-link {{ request()->routeIs('admin.lead-search.query-logs*') ? 'active' : '' }}" href="{{ route('admin.lead-search.query-logs') }}">{{ __('Query logs') }}</a></li>
+                    <li class="sidebar-item"><a class="sidebar-link {{ request()->routeIs('admin.lead-search.saved-searches') ? 'active' : '' }}" href="{{ route('admin.lead-search.saved-searches') }}">{{ __('Saved searches') }}</a></li>
+                </ul>
+            </li>
+            @endcan
+
             @can('view-reports')
             @php $reportsActive = request()->routeIs('admin.reports.*'); @endphp
             <li class="sidebar-item {{ $reportsActive ? 'active' : '' }}">

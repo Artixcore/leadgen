@@ -83,6 +83,11 @@
                         <x-nav-link :href="route('analytics.index')" :active="request()->routeIs('analytics.*')">
                             {{ __('Analytics') }}
                         </x-nav-link>
+                        @can('use-lead-search')
+                            <x-nav-link :href="route('lead-search.index')" :active="request()->routeIs('lead-search.*')">
+                                {{ __('Lead Search') }}
+                            </x-nav-link>
+                        @endcan
                         @can('search-leads')
                             <x-nav-link :href="route('leads.index')" :active="request()->routeIs('leads.*')">
                                 {{ __('Leads') }}

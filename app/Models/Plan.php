@@ -20,6 +20,9 @@ class Plan extends Model
         'team_members_limit',
         'api_access',
         'advanced_filters',
+        'lead_search_searches_per_month',
+        'saved_lead_searches_limit',
+        'lead_search_full_contact',
         'trial_days',
         'sort_order',
         'is_active',
@@ -33,6 +36,7 @@ class Plan extends Model
         return [
             'api_access' => 'boolean',
             'advanced_filters' => 'boolean',
+            'lead_search_full_contact' => 'boolean',
             'is_active' => 'boolean',
         ];
     }
@@ -78,6 +82,24 @@ class Plan extends Model
     public function teamMembersLimit(): int
     {
         return $this->team_members_limit;
+    }
+
+    /**
+     * @return int|null Null means unlimited lead searches per month.
+     */
+    public function leadSearchSearchesLimit(): ?int
+    {
+        return $this->lead_search_searches_per_month;
+    }
+
+    public function savedLeadSearchesLimit(): int
+    {
+        return (int) ($this->saved_lead_searches_limit ?? 0);
+    }
+
+    public function leadSearchFullContact(): bool
+    {
+        return (bool) ($this->lead_search_full_contact ?? false);
     }
 
     public function subscriptions(): HasMany

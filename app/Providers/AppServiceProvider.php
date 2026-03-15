@@ -13,8 +13,11 @@ use App\Listeners\NotifyAdminOfImportFailure;
 use App\Listeners\StorePaymentFromInvoicePaidWebhook;
 use App\Listeners\SyncSubscriptionPlanIdFromWebhook;
 use App\Models\Lead;
+use App\Models\LeadSearchQuery;
+use App\Models\SavedLeadSearch;
 use App\Models\Subscription;
 use App\Observers\LeadObserver;
+use App\Policies\LeadSearchPolicy;
 use App\Services\CollectorDriverResolver;
 use App\Services\LeadCollectors\CollectorDriverResolver as LeadCollectorsDriverResolver;
 use App\Services\LeadCollectors\Drivers\ApiCollectorDriver as LeadCollectorsApiDriver;
@@ -22,9 +25,16 @@ use App\Services\LeadCollectors\Drivers\CsvCollectorDriver;
 use App\Services\LeadCollectors\Drivers\DirectoryCollectorDriver as LeadCollectorsDirectoryDriver;
 use App\Services\LeadCollectors\Drivers\GoogleMapsCollectorDriver as LeadCollectorsGoogleMapsDriver;
 use App\Services\LeadCollectors\Drivers\WebsiteScanCollectorDriver;
+use App\Services\LeadSearch\LeadSearchProviderManager;
+use App\Services\LeadSearch\Providers\ApiLeadSearchProvider;
+use App\Services\LeadSearch\Providers\CollectorSearchProvider;
+use App\Services\LeadSearch\Providers\DirectorySearchProvider;
+use App\Services\LeadSearch\Providers\GoogleMapsSearchProvider;
+use App\Services\LeadSearch\Providers\ImportedDataSearchProvider;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Cashier\Cashier;
@@ -56,6 +66,16 @@ class AppServiceProvider extends ServiceProvider
                 CollectorType::CsvImport->value => new CsvCollectorDriver,
             ]);
         });
+
+        $this->app->singleton(LeadSearchProviderManager::class, function () {
+            return new LeadSearchProviderManager([
+                'collector' => new CollectorSearchProvider,
+                'google_maps' => new GoogleMapsSearchProvider,
+                'directory' => new DirectorySearchProvider,
+                'api' => new ApiLeadSearchProvider,
+                'imported' => new ImportedDataSearchProvider,
+            ]);
+        });
     }
 
     /**
@@ -65,6 +85,9 @@ class AppServiceProvider extends ServiceProvider
     {
         Cashier::$subscriptionModel = Subscription::class;
         Lead::observe(LeadObserver::class);
+
+        Gate::policy(LeadSearchQuery::class, LeadSearchPolicy::class);
+        Gate::policy(SavedLeadSearch::class, LeadSearchPolicy::class);
 
         $this->configureRateLimiting();
 

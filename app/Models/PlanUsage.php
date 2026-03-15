@@ -12,6 +12,7 @@ class PlanUsage extends Model
         'period',
         'leads_count',
         'exports_count',
+        'lead_search_count',
     ];
 
     /**
@@ -22,6 +23,7 @@ class PlanUsage extends Model
         return [
             'leads_count' => 'integer',
             'exports_count' => 'integer',
+            'lead_search_count' => 'integer',
         ];
     }
 

@@ -19,6 +19,7 @@ class RoleAndPermissionSeeder extends Seeder
         $adminPermissions = [
             'manage-users',
             'manage-leads',
+            'manage-lead-search',
             'manage-lead-sources',
             'manage-lead-collectors',
             'manage-categories',
@@ -36,6 +37,7 @@ class RoleAndPermissionSeeder extends Seeder
             'access-dashboard',
             'manage-profile',
             'search-leads',
+            'use-lead-search',
             'filter-leads',
             'bookmark-leads',
             'manage-lists',
