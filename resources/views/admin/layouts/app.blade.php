@@ -9,7 +9,7 @@
 
     <title>@yield('title', __('Admin')) - {{ config('app.name') }}</title>
 
-    <link href="{{ asset('admin/css/modern.css') }}" rel="stylesheet">
+    <link href="{{ asset('vendor/admin-template/css/modern.css') }}" rel="stylesheet">
     @stack('styles')
 </head>
 <body>
@@ -41,7 +41,7 @@
         </defs>
     </svg>
 
-    <script src="{{ asset('admin/js/app.js') }}"></script>
+    <script src="{{ asset('vendor/admin-template/js/app.js') }}"></script>
     @stack('scripts')
 </body>
 </html>
