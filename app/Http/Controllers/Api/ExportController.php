@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\StoreExportRequest;
 use App\Http\Resources\ExportResource;
 use App\Jobs\ExportLeadsJob;
 use App\Models\Export;
@@ -15,17 +16,11 @@ use Illuminate\Support\Facades\Storage;
 
 class ExportController extends Controller
 {
-    public function store(Request $request): JsonResponse|ExportResource
+    public function store(StoreExportRequest $request): JsonResponse|ExportResource
     {
         $this->authorize('create', Export::class);
 
-        $validated = $request->validate([
-            'format' => ['required', 'string', 'in:csv,xlsx'],
-            'lead_ids' => ['required_without:list_id', 'array', 'min:1'],
-            'lead_ids.*' => ['integer', 'exists:leads,id'],
-            'list_id' => ['required_without:lead_ids', 'integer', 'exists:lead_lists,id'],
-        ]);
-
+        $validated = $request->validated();
         $user = $request->user();
         $subscriptionService = app(SubscriptionService::class);
 
