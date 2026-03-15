@@ -8,6 +8,8 @@ use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Cashier\Billable;
@@ -83,5 +85,25 @@ class User extends Authenticatable implements MustVerifyEmail
     public function currentPlan(): Plan
     {
         return app(SubscriptionService::class)->getPlanForUser($this);
+    }
+
+    public function bookmarkedLeads(): BelongsToMany
+    {
+        return $this->belongsToMany(Lead::class, 'lead_user_bookmarks')->withPivot('created_at');
+    }
+
+    public function leadLists(): HasMany
+    {
+        return $this->hasMany(LeadList::class);
+    }
+
+    public function sharedLeadLists(): BelongsToMany
+    {
+        return $this->belongsToMany(LeadList::class, 'lead_list_user')->withTimestamps();
+    }
+
+    public function savedFilters(): HasMany
+    {
+        return $this->hasMany(SavedFilter::class, 'user_id');
     }
 }

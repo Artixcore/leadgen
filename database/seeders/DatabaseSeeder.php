@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
             RoleAndPermissionSeeder::class,
             AdminUserSeeder::class,
             PlanSeeder::class,
+            LeadSourceSeeder::class,
+            LeadSeeder::class,
         ]);
     }
 }

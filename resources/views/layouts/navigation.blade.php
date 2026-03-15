@@ -19,6 +19,11 @@
                         <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                             {{ __('Users') }}
                         </x-nav-link>
+                        @can('manage-lead-sources')
+                            <x-nav-link :href="route('admin.lead-sources.index')" :active="request()->routeIs('admin.lead-sources.*')">
+                                {{ __('Lead Sources') }}
+                            </x-nav-link>
+                        @endcan
                         @can('manage-subscription-plans')
                             <x-nav-link :href="route('admin.plans.index')" :active="request()->routeIs('admin.plans.*')">
                                 {{ __('Plans') }}
@@ -34,6 +39,16 @@
                         <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                             {{ __('Dashboard') }}
                         </x-nav-link>
+                        @can('search-leads')
+                            <x-nav-link :href="route('leads.index')" :active="request()->routeIs('leads.*')">
+                                {{ __('Leads') }}
+                            </x-nav-link>
+                        @endcan
+                        @can('manage-lists')
+                            <x-nav-link :href="route('lists.index')" :active="request()->routeIs('lists.*')">
+                                {{ __('Lists') }}
+                            </x-nav-link>
+                        @endcan
                     @endrole
                     <x-nav-link :href="route('billing.index')" :active="request()->routeIs('billing.*')">
                         {{ __('Billing') }}
