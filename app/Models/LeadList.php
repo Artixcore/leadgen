@@ -6,9 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class LeadList extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'lead_lists';
 
     protected $fillable = [
@@ -24,7 +27,7 @@ class LeadList extends Model
 
     public function leads(): BelongsToMany
     {
-        return $this->belongsToMany(Lead::class, 'lead_lead_list')->withTimestamps();
+        return $this->belongsToMany(Lead::class, 'lead_list_items')->withTimestamps();
     }
 
     public function sharedWithUsers(): BelongsToMany

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\LeadFreshness;
+use App\LeadSourceStatus;
 use App\LeadStatus;
 use App\VerificationStatus;
 use Illuminate\Database\Eloquent\Builder;
@@ -11,10 +12,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Lead extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'full_name',
@@ -39,6 +41,9 @@ class Lead extends Model
         'duplicate_of_lead_id',
         'notes',
         'lead_status',
+        'created_by',
+        'updated_by',
+        'industry_id',
     ];
 
     /**
@@ -66,7 +71,7 @@ class Lead extends Model
 
     public function leadLists(): BelongsToMany
     {
-        return $this->belongsToMany(LeadList::class, 'lead_lead_list')->withTimestamps();
+        return $this->belongsToMany(LeadList::class, 'lead_list_items')->withTimestamps();
     }
 
     public function bookmarkedByUsers(): BelongsToMany
@@ -87,6 +92,21 @@ class Lead extends Model
     public function duplicateOf(): BelongsTo
     {
         return $this->belongsTo(Lead::class, 'duplicate_of_lead_id');
+    }
+
+    public function industry(): BelongsTo
+    {
+        return $this->belongsTo(Industry::class, 'industry_id');
+    }
+
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updatedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 
     /**
@@ -112,6 +132,13 @@ class Lead extends Model
         }
 
         return LeadFreshness::Unknown;
+    }
+
+    public function scopeFromTrustedSources(Builder $query): Builder
+    {
+        return $query->whereHas('leadSource', function (Builder $q) {
+            $q->where('status', LeadSourceStatus::Active)->where('is_trusted', true);
+        });
     }
 
     public function scopeSearch(Builder $query, ?string $q): Builder

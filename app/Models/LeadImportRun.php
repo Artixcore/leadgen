@@ -14,6 +14,7 @@ class LeadImportRun extends Model
 
     protected $fillable = [
         'lead_source_id',
+        'triggered_by',
         'status',
         'started_at',
         'completed_at',
@@ -37,6 +38,11 @@ class LeadImportRun extends Model
     public function leadSource(): BelongsTo
     {
         return $this->belongsTo(LeadSource::class, 'lead_source_id');
+    }
+
+    public function triggeredBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'triggered_by');
     }
 
     public function rows(): HasMany

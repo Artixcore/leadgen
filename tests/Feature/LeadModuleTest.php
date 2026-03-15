@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Export;
 use App\Models\Lead;
 use App\Models\LeadNote;
 use App\Models\PlanUsage;
@@ -212,7 +213,7 @@ class LeadModuleTest extends TestCase
 
         $response = $this->actingAs($user)->delete(route('lists.destroy', $list));
         $response->assertRedirect(route('lists.index'));
-        $this->assertModelMissing($list);
+        $this->assertSoftDeleted($list);
     }
 
     public function test_user_can_remove_lead_from_list(): void
@@ -265,6 +266,7 @@ class LeadModuleTest extends TestCase
         $usage = PlanUsage::where('user_id', $user->id)->where('period', PlanUsage::currentPeriod())->first();
         $this->assertNotNull($usage);
         $this->assertSame(1, $usage->exports_count);
+        $this->assertSame(1, Export::where('user_id', $user->id)->count());
     }
 
     public function test_duplicate_detection_sets_is_duplicate_when_email_matches(): void

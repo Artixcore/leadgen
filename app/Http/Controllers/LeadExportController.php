@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ExportLeadsRequest;
+use App\Models\Export;
 use App\Models\Lead;
 use App\Models\LeadList;
 use App\Services\SubscriptionService;
@@ -15,9 +16,9 @@ class LeadExportController extends Controller
     public function store(ExportLeadsRequest $request): StreamedResponse|RedirectResponse
     {
         $user = $request->user();
-        $subscription = app(SubscriptionService::class);
+        $subscriptionService = app(SubscriptionService::class);
 
-        if (! $subscription->userCanExport($user)) {
+        if (! $subscriptionService->userCanExport($user)) {
             return redirect()
                 ->back()
                 ->with('error', __('You have reached your export limit for this period. Please upgrade your plan.'));
@@ -38,8 +39,18 @@ class LeadExportController extends Controller
 
         $format = $request->validated('format');
         $leads = Lead::whereIn('id', $leadIds)->orderBy('id')->get();
+        $plan = $subscriptionService->getPlanForUser($user);
 
-        $subscription->incrementExportsCount($user);
+        $subscriptionService->incrementExportsCount($user);
+
+        Export::create([
+            'user_id' => $user->id,
+            'plan_id' => $plan->id,
+            'type' => $format === 'xlsx' ? 'xlsx' : 'csv',
+            'filters' => $request->validated(),
+            'row_count' => $leads->count(),
+            'status' => 'completed',
+        ]);
 
         $extension = $format === 'xlsx' ? 'xlsx' : 'csv';
         $filename = 'leads-'.now()->format('Y-m-d-His').'.'.$extension;
