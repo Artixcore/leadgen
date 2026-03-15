@@ -1,62 +1,62 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Users') }}
-        </h2>
-    </x-slot>
+@extends('admin.layouts.app')
 
-    <div class="space-y-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if (session('status'))
-                <div class="mb-4 rounded-md bg-green-50 p-4 text-sm text-green-800">
-                    {{ session('status') }}
-                </div>
-            @endif
+@section('title', __('Users'))
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead>
-                                <tr>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Name') }}</th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Email') }}</th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Role') }}</th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Status') }}</th>
-                                    <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">{{ __('Actions') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200">
-                                @foreach ($users as $user)
-                                    <tr>
-                                        <td class="px-4 py-3 text-sm text-gray-900">{{ $user->name }}</td>
-                                        <td class="px-4 py-3 text-sm text-gray-600">{{ $user->email }}</td>
-                                        <td class="px-4 py-3 text-sm text-gray-600">{{ $user->roles->pluck('name')->join(', ') ?: '—' }}</td>
-                                        <td class="px-4 py-3">
-                                            <span class="inline-flex rounded-full px-2 py-1 text-xs font-medium
-                                                @if($user->status->value === 'active') bg-green-100 text-green-800
-                                                @elseif($user->status->value === 'suspended') bg-red-100 text-red-800
-                                                @else bg-amber-100 text-amber-800
-                                                @endif">
-                                                {{ ucfirst($user->status->value) }}
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-3 text-right text-sm">
-                                            <a href="{{ route('admin.users.edit', $user) }}" class="text-indigo-600 hover:text-indigo-900">
-                                                {{ __('Edit status') }}
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+@section('content')
+    @include('admin.partials.page-header', [
+        'title' => __('Users'),
+        'breadcrumbs' => [
+            __('Dashboard') => route('admin.dashboard'),
+            __('Users') => null,
+        ],
+    ])
 
-                    <div class="mt-4">
-                        {{ $users->links() }}
-                    </div>
-                </div>
+    @if (session('status'))
+        <x-admin.alert type="success" class="mb-4">{{ session('status') }}</x-admin.alert>
+    @endif
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">{{ __('User list') }}</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped my-0">
+                    <thead>
+                        <tr>
+                            <th>{{ __('Name') }}</th>
+                            <th>{{ __('Email') }}</th>
+                            <th>{{ __('Role') }}</th>
+                            <th>{{ __('Status') }}</th>
+                            <th class="table-action">{{ __('Actions') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($users as $user)
+                            <tr>
+                                <td>{{ $user->name }}</td>
+                                <td>{{ $user->email }}</td>
+                                <td>{{ $user->roles->pluck('name')->join(', ') ?: '—' }}</td>
+                                <td>
+                                    <span class="badge
+                                        @if ($user->status->value === 'active') bg-success
+                                        @elseif ($user->status->value === 'suspended') bg-danger
+                                        @else bg-warning
+                                        @endif">
+                                        {{ ucfirst($user->status->value) }}
+                                    </span>
+                                </td>
+                                <td class="table-action">
+                                    <a href="{{ route('admin.users.edit', $user) }}"><i class="align-middle fas fa-fw fa-pen"></i></a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            <div class="p-3 border-top">
+                {{ $users->links() }}
             </div>
         </div>
     </div>
-</x-app-layout>
+@endsection

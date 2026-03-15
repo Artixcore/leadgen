@@ -1,93 +1,96 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Import runs') }}
-        </h2>
-    </x-slot>
+@extends('admin.layouts.app')
 
-    <div class="space-y-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                <div class="p-4 border-b border-gray-200">
-                    <form method="GET" action="{{ route('admin.import-runs.index') }}" class="flex flex-wrap gap-4 items-end">
-                        <div>
-                            <label for="source" class="block text-xs font-medium text-gray-700">{{ __('Source') }}</label>
-                            <select id="source" name="source" class="mt-1 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">
-                                <option value="">{{ __('All') }}</option>
-                                @foreach (\App\Models\LeadSource::orderBy('name')->get() as $s)
-                                    <option value="{{ $s->id }}" @selected(($filters['source'] ?? '') == $s->id)>{{ $s->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
-                            <label for="status" class="block text-xs font-medium text-gray-700">{{ __('Status') }}</label>
-                            <select id="status" name="status" class="mt-1 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">
-                                <option value="">{{ __('All') }}</option>
-                                @foreach (\App\ImportRunStatus::cases() as $status)
-                                    <option value="{{ $status->value }}" @selected(($filters['status'] ?? '') === $status->value)>{{ ucfirst($status->value) }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <button type="submit" class="px-3 py-1.5 bg-gray-200 text-gray-800 rounded-md text-sm hover:bg-gray-300">{{ __('Filter') }}</button>
-                    </form>
+@section('title', __('Import runs'))
+
+@section('content')
+    @include('admin.partials.page-header', [
+        'title' => __('Import runs'),
+        'breadcrumbs' => [
+            __('Dashboard') => route('admin.dashboard'),
+            __('Import Logs') => null,
+        ],
+    ])
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">{{ __('Filters') }}</h5>
+        </div>
+        <div class="card-body">
+            <form method="GET" action="{{ route('admin.import-runs.index') }}" class="row g-3">
+                <div class="col-auto">
+                    <label for="source" class="form-label">{{ __('Source') }}</label>
+                    <select id="source" name="source" class="form-select form-select-sm" style="width: 12rem;">
+                        <option value="">{{ __('All') }}</option>
+                        @foreach (\App\Models\LeadSource::orderBy('name')->get() as $s)
+                            <option value="{{ $s->id }}" @selected(($filters['source'] ?? '') == $s->id)>{{ $s->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
+                <div class="col-auto">
+                    <label for="status" class="form-label">{{ __('Status') }}</label>
+                    <select id="status" name="status" class="form-select form-select-sm" style="width: 10rem;">
+                        <option value="">{{ __('All') }}</option>
+                        @foreach (\App\ImportRunStatus::cases() as $status)
+                            <option value="{{ $status->value }}" @selected(($filters['status'] ?? '') === $status->value)>{{ ucfirst($status->value) }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-auto d-flex align-items-end">
+                    <button type="submit" class="btn btn-secondary btn-sm">{{ __('Filter') }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">{{ __('Import run list') }}</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped my-0">
+                    <thead>
+                        <tr>
+                            <th>{{ __('ID') }}</th>
+                            <th>{{ __('Source') }}</th>
+                            <th>{{ __('Status') }}</th>
+                            <th>{{ __('Started') }}</th>
+                            <th>{{ __('Stats') }}</th>
+                            <th class="table-action">{{ __('Actions') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($runs as $run)
+                            <tr>
+                                <td>{{ $run->id }}</td>
+                                <td>{{ $run->leadSource?->name ?? '—' }}</td>
+                                <td>
+                                    <span class="badge
+                                        @if ($run->status->value === 'completed') bg-success
+                                        @elseif ($run->status->value === 'failed') bg-danger
+                                        @elseif ($run->status->value === 'running') bg-primary
+                                        @else bg-secondary
+                                        @endif">
+                                        {{ ucfirst($run->status->value) }}
+                                    </span>
+                                </td>
+                                <td>{{ $run->started_at?->format('Y-m-d H:i') ?? '—' }}</td>
+                                <td>{{ $run->stats ? json_encode($run->stats) : '—' }}</td>
+                                <td class="table-action">
+                                    <a href="{{ route('admin.import-runs.show', $run) }}"><i class="align-middle fas fa-fw fa-eye"></i></a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-4">{{ __('No import runs yet.') }}</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
-
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead>
-                                <tr>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{{ __('ID') }}</th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Source') }}</th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Status') }}</th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Started') }}</th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Stats') }}</th>
-                                    <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">{{ __('Actions') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200">
-                                @forelse ($runs as $run)
-                                    <tr>
-                                        <td class="px-4 py-3 text-sm text-gray-900">{{ $run->id }}</td>
-                                        <td class="px-4 py-3 text-sm text-gray-600">{{ $run->leadSource?->name ?? '—' }}</td>
-                                        <td class="px-4 py-3">
-                                            <span class="inline-flex rounded-full px-2 py-1 text-xs font-medium
-                                                @if($run->status->value === 'completed') bg-green-100 text-green-800
-                                                @elseif($run->status->value === 'failed') bg-red-100 text-red-800
-                                                @elseif($run->status->value === 'running') bg-blue-100 text-blue-800
-                                                @else bg-gray-100 text-gray-800
-                                                @endif">
-                                                {{ ucfirst($run->status->value) }}
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-600">{{ $run->started_at?->format('Y-m-d H:i') ?? '—' }}</td>
-                                        <td class="px-4 py-3 text-sm text-gray-600">
-                                            @if ($run->stats)
-                                                {{ json_encode($run->stats) }}
-                                            @else
-                                                —
-                                            @endif
-                                        </td>
-                                        <td class="px-4 py-3 text-right text-sm">
-                                            <a href="{{ route('admin.import-runs.show', $run) }}" class="text-indigo-600 hover:text-indigo-900">{{ __('View') }}</a>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6" class="px-4 py-8 text-center text-gray-500">{{ __('No import runs yet.') }}</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="mt-4">
-                        {{ $runs->links() }}
-                    </div>
-                </div>
+            <div class="p-3 border-top">
+                {{ $runs->links() }}
             </div>
         </div>
     </div>
-</x-app-layout>
+@endsection

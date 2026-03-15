@@ -1,47 +1,51 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Subscriptions') }}
-        </h2>
-    </x-slot>
+@extends('admin.layouts.app')
 
-    <div class="space-y-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead>
-                                <tr>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{{ __('User') }}</th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Plan') }}</th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Status') }}</th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Trial ends') }}</th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Ends at') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200">
-                                @foreach ($subscriptions as $sub)
-                                    <tr>
-                                        <td class="px-4 py-3 text-sm text-gray-900">
-                                            {{ $sub->user?->name ?? '—' }}
-                                            <span class="text-gray-500">({{ $sub->user?->email ?? '—' }})</span>
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-600">{{ $sub->plan?->name ?? '—' }}</td>
-                                        <td class="px-4 py-3 text-sm text-gray-600">{{ $sub->stripe_status }}</td>
-                                        <td class="px-4 py-3 text-sm text-gray-600">{{ $sub->trial_ends_at?->format('M j, Y') ?? '—' }}</td>
-                                        <td class="px-4 py-3 text-sm text-gray-600">{{ $sub->ends_at?->format('M j, Y') ?? '—' }}</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+@section('title', __('Subscriptions'))
 
-                    <div class="mt-4">
-                        {{ $subscriptions->links() }}
-                    </div>
-                </div>
+@section('content')
+    @include('admin.partials.page-header', [
+        'title' => __('Subscriptions'),
+        'breadcrumbs' => [
+            __('Dashboard') => route('admin.dashboard'),
+            __('Subscriptions') => null,
+        ],
+    ])
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">{{ __('Subscription list') }}</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped my-0">
+                    <thead>
+                        <tr>
+                            <th>{{ __('User') }}</th>
+                            <th>{{ __('Plan') }}</th>
+                            <th>{{ __('Status') }}</th>
+                            <th>{{ __('Trial ends') }}</th>
+                            <th>{{ __('Ends at') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($subscriptions as $sub)
+                            <tr>
+                                <td>
+                                    {{ $sub->user?->name ?? '—' }}
+                                    <span class="text-muted">({{ $sub->user?->email ?? '—' }})</span>
+                                </td>
+                                <td>{{ $sub->plan?->name ?? '—' }}</td>
+                                <td>{{ $sub->stripe_status }}</td>
+                                <td>{{ $sub->trial_ends_at?->format('M j, Y') ?? '—' }}</td>
+                                <td>{{ $sub->ends_at?->format('M j, Y') ?? '—' }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            <div class="p-3 border-top">
+                {{ $subscriptions->links() }}
             </div>
         </div>
     </div>
-</x-app-layout>
+@endsection

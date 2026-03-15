@@ -1,32 +1,41 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Edit lead source') }}
-        </h2>
-    </x-slot>
+@extends('admin.layouts.app')
 
-    <div class="space-y-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if (session('status'))
-                <div class="mb-4 rounded-md bg-green-50 p-4 text-sm text-green-800">
-                    {{ session('status') }}
+@section('title', __('Edit lead source'))
+
+@section('content')
+    @include('admin.partials.page-header', [
+        'title' => __('Edit lead source'),
+        'breadcrumbs' => [
+            __('Dashboard') => route('admin.dashboard'),
+            __('Lead Sources') => route('admin.lead-sources.index'),
+            $source->name => route('admin.lead-sources.show', $source),
+            __('Edit') => null,
+        ],
+    ])
+
+    @if (session('status'))
+        <x-admin.alert type="success" class="mb-4">{{ session('status') }}</x-admin.alert>
+    @endif
+
+    <div class="row">
+        <div class="col-12 col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">{{ $source->name }}</h5>
                 </div>
-            @endif
-
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 max-w-xl">
+                <div class="card-body">
                     <form method="POST" action="{{ route('admin.lead-sources.update', $source) }}">
                         @csrf
                         @method('patch')
                         @include('admin.lead-sources._form', ['source' => $source])
 
-                        <div class="flex items-center gap-4 mt-6">
-                            <x-primary-button>{{ __('Update source') }}</x-primary-button>
-                            <a href="{{ route('admin.lead-sources.show', $source) }}" class="text-sm text-gray-600 hover:text-gray-900">{{ __('Cancel') }}</a>
+                        <div class="d-flex gap-2 mt-3">
+                            <button type="submit" class="btn btn-primary">{{ __('Update source') }}</button>
+                            <a href="{{ route('admin.lead-sources.show', $source) }}" class="btn btn-secondary">{{ __('Cancel') }}</a>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-</x-app-layout>
+@endsection

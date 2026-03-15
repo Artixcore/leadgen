@@ -1,31 +1,40 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('Most active users') }}</h2>
-            <a href="{{ route('admin.reports.index') }}" class="text-sm text-gray-600 hover:text-gray-900">{{ __('Back to reports') }}</a>
-        </div>
-    </x-slot>
+@extends('admin.layouts.app')
 
-    <div class="space-y-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                <p class="text-sm text-gray-600 mb-4">{{ __('Activity = leads viewed + exports in current period.') }}</p>
-                <table class="min-w-full divide-y divide-gray-200">
+@section('title', __('Most active users'))
+
+@section('content')
+    @include('admin.partials.page-header', [
+        'title' => __('Most active users'),
+        'breadcrumbs' => [
+            __('Dashboard') => route('admin.dashboard'),
+            __('Reports') => route('admin.reports.index'),
+            __('Most active users') => null,
+        ],
+    ])
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">{{ __('Most active users') }}</h5>
+        </div>
+        <div class="card-body">
+            <p class="text-muted small mb-4">{{ __('Activity = leads viewed + exports in current period.') }}</p>
+            <div class="table-responsive">
+                <table class="table table-striped my-0">
                     <thead>
                         <tr>
-                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{{ __('User') }}</th>
-                            <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">{{ __('Activity (this period)') }}</th>
+                            <th>{{ __('User') }}</th>
+                            <th class="text-end">{{ __('Activity (this period)') }}</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200">
+                    <tbody>
                         @forelse ($users as $user)
                             <tr>
-                                <td class="px-4 py-3 text-sm text-gray-900">{{ $user->name }} <span class="text-gray-500">({{ $user->email }})</span></td>
-                                <td class="px-4 py-3 text-sm text-right text-gray-900">{{ $usageMap->get($user->id, 0) }}</td>
+                                <td>{{ $user->name }} <span class="text-muted">({{ $user->email }})</span></td>
+                                <td class="text-end">{{ $usageMap->get($user->id, 0) }}</td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="2" class="px-4 py-8 text-center text-sm text-gray-500">{{ __('No data.') }}</td>
+                                <td colspan="2" class="text-center text-muted py-4">{{ __('No data.') }}</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -33,4 +42,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+@endsection

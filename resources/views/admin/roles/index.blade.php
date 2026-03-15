@@ -1,48 +1,49 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Roles') }}
-        </h2>
-    </x-slot>
+@extends('admin.layouts.app')
 
-    <div class="space-y-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if (session('status'))
-                <div class="mb-4 rounded-md bg-green-50 p-4 text-sm text-green-800">
-                    {{ session('status') }}
-                </div>
-            @endif
+@section('title', __('Roles'))
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead>
-                                <tr>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Role') }}</th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Permissions') }}</th>
-                                    <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">{{ __('Actions') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200">
-                                @foreach ($roles as $role)
-                                    <tr>
-                                        <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ ucfirst($role->name) }}</td>
-                                        <td class="px-4 py-3 text-sm text-gray-600">{{ $role->permissions->pluck('name')->join(', ') ?: '—' }}</td>
-                                        <td class="px-4 py-3 text-right text-sm">
-                                            @if ($role->name !== 'admin')
-                                                <a href="{{ route('admin.roles.edit', $role) }}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit permissions') }}</a>
-                                            @else
-                                                <span class="text-gray-400">{{ __('System role') }}</span>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+@section('content')
+    @include('admin.partials.page-header', [
+        'title' => __('Roles'),
+        'breadcrumbs' => [
+            __('Dashboard') => route('admin.dashboard'),
+            __('Roles') => null,
+        ],
+    ])
+
+    @if (session('status'))
+        <x-admin.alert type="success" class="mb-4">{{ session('status') }}</x-admin.alert>
+    @endif
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">{{ __('Role list') }}</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-striped my-0">
+                <thead>
+                    <tr>
+                        <th>{{ __('Role') }}</th>
+                        <th>{{ __('Permissions') }}</th>
+                        <th class="table-action">{{ __('Actions') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($roles as $role)
+                        <tr>
+                            <td class="fw-bold">{{ ucfirst($role->name) }}</td>
+                            <td>{{ $role->permissions->pluck('name')->join(', ') ?: '—' }}</td>
+                            <td class="table-action">
+                                @if ($role->name !== 'admin')
+                                    <a href="{{ route('admin.roles.edit', $role) }}"><i class="align-middle fas fa-fw fa-pen"></i> {{ __('Edit permissions') }}</a>
+                                @else
+                                    <span class="text-muted">{{ __('System role') }}</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
-</x-app-layout>
+@endsection

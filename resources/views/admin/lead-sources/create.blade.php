@@ -1,25 +1,43 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Add lead source') }}
-        </h2>
-    </x-slot>
+@extends('admin.layouts.app')
 
-    <div class="space-y-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 max-w-xl">
+@section('title', __('Add lead source'))
+
+@section('content')
+    @include('admin.partials.page-header', [
+        'title' => __('Add lead source'),
+        'breadcrumbs' => [
+            __('Dashboard') => route('admin.dashboard'),
+            __('Lead Sources') => route('admin.lead-sources.index'),
+            __('Add') => null,
+        ],
+    ])
+
+    <div class="row">
+        <div class="col-12 col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">{{ __('New lead source') }}</h5>
+                </div>
+                <div class="card-body">
+                    @if ($errors->any())
+                        <x-admin.alert type="danger" class="mb-4">
+                            @foreach ($errors->all() as $error)
+                                {{ $error }}<br>
+                            @endforeach
+                        </x-admin.alert>
+                    @endif
+
                     <form method="POST" action="{{ route('admin.lead-sources.store') }}">
                         @csrf
                         @include('admin.lead-sources._form', ['source' => null])
 
-                        <div class="flex items-center gap-4 mt-6">
-                            <x-primary-button>{{ __('Create source') }}</x-primary-button>
-                            <a href="{{ route('admin.lead-sources.index') }}" class="text-sm text-gray-600 hover:text-gray-900">{{ __('Cancel') }}</a>
+                        <div class="d-flex gap-2 mt-3">
+                            <button type="submit" class="btn btn-primary">{{ __('Create source') }}</button>
+                            <a href="{{ route('admin.lead-sources.index') }}" class="btn btn-secondary">{{ __('Cancel') }}</a>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-</x-app-layout>
+@endsection

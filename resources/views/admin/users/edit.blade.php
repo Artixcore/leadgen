@@ -1,43 +1,58 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Edit user status') }}
-        </h2>
-    </x-slot>
+@extends('admin.layouts.app')
 
-    <div class="space-y-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 max-w-xl">
-                    <p class="text-sm text-gray-600 mb-4">
+@section('title', __('Edit user status'))
+
+@section('content')
+    @include('admin.partials.page-header', [
+        'title' => __('Edit user status'),
+        'breadcrumbs' => [
+            __('Dashboard') => route('admin.dashboard'),
+            __('Users') => route('admin.users.index'),
+            __('Edit') => null,
+        ],
+    ])
+
+    <div class="row">
+        <div class="col-12 col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">{{ __('Account status') }}</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-4">
                         {{ __('User:') }} <strong>{{ $user->name }}</strong> ({{ $user->email }})
                     </p>
+
+                    @if ($errors->any())
+                        <x-admin.alert type="danger" class="mb-4">
+                            @foreach ($errors->all() as $error)
+                                {{ $error }}<br>
+                            @endforeach
+                        </x-admin.alert>
+                    @endif
 
                     <form method="POST" action="{{ route('admin.users.update', $user) }}">
                         @csrf
                         @method('patch')
 
-                        <div>
-                            <x-input-label for="status" :value="__('Account status')" />
-                            <select id="status" name="status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <div class="mb-3">
+                            <label for="status" class="form-label">{{ __('Account status') }}</label>
+                            <select id="status" name="status" class="form-control">
                                 @foreach (\App\UserStatus::cases() as $status)
                                     <option value="{{ $status->value }}" @selected(old('status', $user->status->value) === $status->value)>
                                         {{ ucfirst($status->value) }}
                                     </option>
                                 @endforeach
                             </select>
-                            <x-input-error class="mt-2" :messages="$errors->get('status')" />
                         </div>
 
-                        <div class="flex items-center gap-4 mt-6">
-                            <x-primary-button>{{ __('Update status') }}</x-primary-button>
-                            <a href="{{ route('admin.users.index') }}" class="text-sm text-gray-600 hover:text-gray-900">
-                                {{ __('Cancel') }}
-                            </a>
+                        <div class="d-flex gap-2 align-items-center">
+                            <button type="submit" class="btn btn-primary">{{ __('Update status') }}</button>
+                            <a href="{{ route('admin.users.index') }}" class="text-muted">{{ __('Cancel') }}</a>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-</x-app-layout>
+@endsection
