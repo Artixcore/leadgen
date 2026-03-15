@@ -70,6 +70,11 @@ class LeadSource extends Model
         return $this->hasMany(LeadImportRun::class, 'lead_source_id');
     }
 
+    public function leadCollectors(): HasMany
+    {
+        return $this->hasMany(LeadCollector::class, 'lead_source_id');
+    }
+
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');

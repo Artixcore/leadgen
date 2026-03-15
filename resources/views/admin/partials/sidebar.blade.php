@@ -41,7 +41,7 @@
             @endcan
 
             @can('manage-lead-sources')
-            @php $leadSourcesActive = request()->routeIs('admin.lead-sources.*') || request()->routeIs('admin.import-runs.*'); @endphp
+            @php $leadSourcesActive = request()->routeIs('admin.lead-sources.*') || request()->routeIs('admin.import-runs.*') || request()->routeIs('admin.lead-collectors.*'); @endphp
             <li class="sidebar-item {{ $leadSourcesActive ? 'active' : '' }}">
                 <a data-bs-target="#lead-sources-menu" data-bs-toggle="collapse" class="sidebar-link {{ $leadSourcesActive ? '' : 'collapsed' }}">
                     <i class="align-middle me-2 fas fa-fw fa-database"></i>
@@ -50,6 +50,9 @@
                 <ul id="lead-sources-menu" class="sidebar-dropdown list-unstyled collapse {{ $leadSourcesActive ? 'show' : '' }}" data-bs-parent="#sidebar">
                     <li class="sidebar-item"><a class="sidebar-link {{ request()->routeIs('admin.lead-sources.*') ? 'active' : '' }}" href="{{ route('admin.lead-sources.index') }}">{{ __('Sources') }}</a></li>
                     <li class="sidebar-item"><a class="sidebar-link {{ request()->routeIs('admin.import-runs.*') ? 'active' : '' }}" href="{{ route('admin.import-runs.index') }}">{{ __('Import Logs') }}</a></li>
+                    @can('manage-lead-collectors')
+                    <li class="sidebar-item"><a class="sidebar-link {{ request()->routeIs('admin.lead-collectors.*') ? 'active' : '' }}" href="{{ route('admin.lead-collectors.index') }}">{{ __('Lead Collectors') }}</a></li>
+                    @endcan
                 </ul>
             </li>
             @endcan

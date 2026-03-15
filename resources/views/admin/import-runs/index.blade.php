@@ -27,6 +27,15 @@
                     </select>
                 </div>
                 <div class="col-auto">
+                    <label for="collector" class="form-label">{{ __('Collector') }}</label>
+                    <select id="collector" name="collector" class="form-select form-select-sm" style="width: 12rem;">
+                        <option value="">{{ __('All') }}</option>
+                        @foreach (\App\Models\LeadCollector::orderBy('name')->get() as $c)
+                            <option value="{{ $c->id }}" @selected(($filters['collector'] ?? '') == $c->id)>{{ $c->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-auto">
                     <label for="status" class="form-label">{{ __('Status') }}</label>
                     <select id="status" name="status" class="form-select form-select-sm" style="width: 10rem;">
                         <option value="">{{ __('All') }}</option>
@@ -53,6 +62,7 @@
                         <tr>
                             <th>{{ __('ID') }}</th>
                             <th>{{ __('Source') }}</th>
+                            <th>{{ __('Collector') }}</th>
                             <th>{{ __('Status') }}</th>
                             <th>{{ __('Started') }}</th>
                             <th>{{ __('Stats') }}</th>
@@ -64,6 +74,13 @@
                             <tr>
                                 <td>{{ $run->id }}</td>
                                 <td>{{ $run->leadSource?->name ?? '—' }}</td>
+                                <td>
+                                    @if ($run->leadCollector)
+                                        <a href="{{ route('admin.lead-collectors.show', $run->leadCollector) }}">{{ $run->leadCollector->name }}</a>
+                                    @else
+                                        —
+                                    @endif
+                                </td>
                                 <td>
                                     <span class="badge
                                         @if ($run->status->value === 'completed') bg-success
@@ -82,7 +99,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center text-muted py-4">{{ __('No import runs yet.') }}</td>
+                                <td colspan="7" class="text-center text-muted py-4">{{ __('No import runs yet.') }}</td>
                             </tr>
                         @endforelse
                     </tbody>

@@ -2,25 +2,34 @@
 
 namespace App\Models;
 
-use App\ImportRunStatus;
+use App\LeadCollectorRunStatus;
+use Database\Factories\LeadCollectorRunFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class LeadImportRun extends Model
+/**
+ * @use HasFactory<LeadCollectorRunFactory>
+ */
+class LeadCollectorRun extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'lead_source_id',
         'lead_collector_id',
-        'triggered_by',
+        'run_type',
         'status',
+        'total_found',
+        'total_processed',
+        'total_new',
+        'total_duplicates',
+        'total_failed',
         'started_at',
-        'completed_at',
+        'finished_at',
+        'notes',
         'error_message',
-        'stats',
+        'meta_json',
     ];
 
     /**
@@ -29,16 +38,11 @@ class LeadImportRun extends Model
     protected function casts(): array
     {
         return [
-            'status' => ImportRunStatus::class,
+            'status' => LeadCollectorRunStatus::class,
             'started_at' => 'datetime',
-            'completed_at' => 'datetime',
-            'stats' => 'array',
+            'finished_at' => 'datetime',
+            'meta_json' => 'array',
         ];
-    }
-
-    public function leadSource(): BelongsTo
-    {
-        return $this->belongsTo(LeadSource::class, 'lead_source_id');
     }
 
     public function leadCollector(): BelongsTo
@@ -46,13 +50,8 @@ class LeadImportRun extends Model
         return $this->belongsTo(LeadCollector::class, 'lead_collector_id');
     }
 
-    public function triggeredBy(): BelongsTo
+    public function rawLeadRecords(): HasMany
     {
-        return $this->belongsTo(User::class, 'triggered_by');
-    }
-
-    public function rows(): HasMany
-    {
-        return $this->hasMany(LeadImportRow::class, 'lead_import_run_id');
+        return $this->hasMany(RawLeadRecord::class, 'lead_collector_run_id');
     }
 }

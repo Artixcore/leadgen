@@ -2,6 +2,12 @@
 
 namespace App\Providers;
 
+use App\Collectors\Drivers\ApiCollectorDriver;
+use App\Collectors\Drivers\CsvUploadCollectorDriver;
+use App\Collectors\Drivers\DirectoryCollectorDriver;
+use App\Collectors\Drivers\GoogleMapsCollectorDriver;
+use App\Collectors\Drivers\WebsiteCollectorDriver;
+use App\CollectorType;
 use App\Events\ImportRunFailed;
 use App\Listeners\NotifyAdminOfImportFailure;
 use App\Listeners\StorePaymentFromInvoicePaidWebhook;
@@ -9,6 +15,13 @@ use App\Listeners\SyncSubscriptionPlanIdFromWebhook;
 use App\Models\Lead;
 use App\Models\Subscription;
 use App\Observers\LeadObserver;
+use App\Services\CollectorDriverResolver;
+use App\Services\LeadCollectors\CollectorDriverResolver as LeadCollectorsDriverResolver;
+use App\Services\LeadCollectors\Drivers\ApiCollectorDriver as LeadCollectorsApiDriver;
+use App\Services\LeadCollectors\Drivers\CsvCollectorDriver;
+use App\Services\LeadCollectors\Drivers\DirectoryCollectorDriver as LeadCollectorsDirectoryDriver;
+use App\Services\LeadCollectors\Drivers\GoogleMapsCollectorDriver as LeadCollectorsGoogleMapsDriver;
+use App\Services\LeadCollectors\Drivers\WebsiteScanCollectorDriver;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
@@ -24,7 +37,25 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(CollectorDriverResolver::class, function () {
+            return new CollectorDriverResolver([
+                CollectorType::GoogleMaps->value => new GoogleMapsCollectorDriver,
+                CollectorType::Directory->value => new DirectoryCollectorDriver,
+                CollectorType::WebsiteScan->value => new WebsiteCollectorDriver,
+                CollectorType::ApiConnector->value => new ApiCollectorDriver,
+                CollectorType::CsvImport->value => new CsvUploadCollectorDriver,
+            ]);
+        });
+
+        $this->app->singleton(LeadCollectorsDriverResolver::class, function () {
+            return new LeadCollectorsDriverResolver([
+                CollectorType::GoogleMaps->value => new LeadCollectorsGoogleMapsDriver,
+                CollectorType::Directory->value => new LeadCollectorsDirectoryDriver,
+                CollectorType::WebsiteScan->value => new WebsiteScanCollectorDriver,
+                CollectorType::ApiConnector->value => new LeadCollectorsApiDriver,
+                CollectorType::CsvImport->value => new CsvCollectorDriver,
+            ]);
+        });
     }
 
     /**

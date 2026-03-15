@@ -4,6 +4,9 @@ use App\Http\Controllers\Admin\ActivityLogController as AdminActivityLogControll
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\CountryController as AdminCountryController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\LeadCollectorController;
+use App\Http\Controllers\Admin\LeadCollectorRuleController;
+use App\Http\Controllers\Admin\LeadCollectorRunController;
 use App\Http\Controllers\Admin\LeadController as AdminLeadController;
 use App\Http\Controllers\Admin\LeadImportRunController;
 use App\Http\Controllers\Admin\LeadSourceController;
@@ -134,6 +137,16 @@ Route::middleware(['auth', 'active', 'onboarding.completed', 'role:admin', 'thro
         Route::post('lead-sources/{leadSource}/sync', [LeadSourceController::class, 'sync'])->name('lead-sources.sync');
         Route::resource('lead-sources', LeadSourceController::class)->only(['index', 'create', 'store', 'show', 'edit', 'update']);
         Route::resource('import-runs', LeadImportRunController::class)->only(['index', 'show']);
+    });
+    Route::middleware('permission:manage-lead-collectors')->group(function () {
+        Route::post('lead-collectors/{leadCollector}/run', [LeadCollectorController::class, 'run'])->name('lead-collectors.run');
+        Route::get('lead-collectors/{leadCollector}/raw-records', [LeadCollectorController::class, 'rawRecords'])->name('lead-collectors.raw-records.index');
+        Route::resource('lead-collectors.rules', LeadCollectorRuleController::class)->only(['index', 'store', 'edit', 'update', 'destroy'])->shallow()->names('lead-collectors.rules');
+        Route::get('lead-collectors/{leadCollector}/runs', [LeadCollectorRunController::class, 'index'])->name('lead-collectors.runs.index');
+        Route::get('lead-collector-runs', [LeadCollectorRunController::class, 'index'])->name('lead-collector-runs.index');
+        Route::get('lead-collector-runs/{run}', [LeadCollectorRunController::class, 'show'])->name('lead-collector-runs.show');
+        Route::get('lead-collector-runs/{run}/raw-records', [LeadCollectorRunController::class, 'rawRecords'])->name('lead-collector-runs.raw-records.index');
+        Route::resource('lead-collectors', LeadCollectorController::class)->only(['index', 'create', 'store', 'show', 'edit', 'update']);
     });
     Route::get('plans', [PlanController::class, 'index'])->name('plans.index')->middleware('permission:manage-subscription-plans');
     Route::get('subscriptions', [SubscriptionController::class, 'index'])->name('subscriptions.index')->middleware('permission:manage-payments');

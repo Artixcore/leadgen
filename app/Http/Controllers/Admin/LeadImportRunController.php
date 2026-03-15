@@ -14,8 +14,9 @@ class LeadImportRunController extends Controller
         $this->authorize('viewAny', LeadImportRun::class);
 
         $runs = LeadImportRun::query()
-            ->with('leadSource')
+            ->with(['leadSource', 'leadCollector'])
             ->when($request->filled('source'), fn ($q) => $q->where('lead_source_id', $request->input('source')))
+            ->when($request->filled('collector'), fn ($q) => $q->where('lead_collector_id', $request->input('collector')))
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->input('status')))
             ->latest()
             ->paginate(15)
@@ -23,7 +24,7 @@ class LeadImportRunController extends Controller
 
         return view('admin.import-runs.index', [
             'runs' => $runs,
-            'filters' => $request->only(['source', 'status']),
+            'filters' => $request->only(['source', 'collector', 'status']),
         ]);
     }
 
@@ -31,7 +32,7 @@ class LeadImportRunController extends Controller
     {
         $this->authorize('view', $importRun);
 
-        $importRun->load(['leadSource', 'rows' => fn ($q) => $q->orderBy('row_index')]);
+        $importRun->load(['leadSource', 'leadCollector', 'rows' => fn ($q) => $q->orderBy('row_index')]);
 
         return view('admin.import-runs.show', ['run' => $importRun]);
     }

@@ -20,6 +20,7 @@ class RoleAndPermissionSeeder extends Seeder
             'manage-users',
             'manage-leads',
             'manage-lead-sources',
+            'manage-lead-collectors',
             'manage-categories',
             'manage-countries',
             'manage-subscription-plans',
