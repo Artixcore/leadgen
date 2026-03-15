@@ -6,7 +6,7 @@
         </div>
     </x-slot>
 
-    <div class="py-12">
+    <div class="space-y-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <form method="POST" action="{{ route('admin.countries.update', $country) }}" class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 max-w-md">
                 @csrf

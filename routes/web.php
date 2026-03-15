@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ActivityLogController as AdminActivityLogController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\CountryController as AdminCountryController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\BillingController;
+use App\Http\Controllers\ExportHistoryController;
 use App\Http\Controllers\LeadBookmarkController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\LeadExportController;
@@ -24,7 +26,9 @@ use App\Http\Controllers\LeadListController;
 use App\Http\Controllers\LeadNoteController;
 use App\Http\Controllers\LeadReminderController;
 use App\Http\Controllers\LeadTagController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OnboardingController;
+use App\Http\Controllers\PricingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SavedFilterController;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +36,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/pricing', [PricingController::class, 'index'])->name('pricing');
 
 Route::get('/auth/{provider}/redirect', [SocialAuthController::class, 'redirect'])
     ->name('auth.social.redirect');
@@ -50,19 +56,30 @@ Route::middleware(['auth', 'active'])->group(function () {
 });
 
 Route::get('/dashboard', fn () => view('dashboard'))
-    ->middleware(['auth', 'verified', 'active', 'onboarding.completed', 'role:user'])
+    ->middleware(['auth', 'verified', 'active', 'onboarding.completed', 'role:user', 'throttle:web'])
     ->name('dashboard');
 
 Route::get('/analytics', [AnalyticsController::class, 'index'])
-    ->middleware(['auth', 'verified', 'active', 'onboarding.completed', 'role:user'])
+    ->middleware(['auth', 'verified', 'active', 'onboarding.completed', 'role:user', 'throttle:web'])
     ->name('analytics.index');
 
-Route::middleware(['auth', 'verified', 'active', 'onboarding.completed', 'role:user', 'permission:search-leads'])
+Route::get('/exports', [ExportHistoryController::class, 'index'])
+    ->middleware(['auth', 'verified', 'active', 'onboarding.completed', 'role:user', 'throttle:web'])
+    ->name('exports.index');
+Route::get('/exports/{export}/download', [LeadExportController::class, 'download'])
+    ->middleware(['auth', 'verified', 'active', 'onboarding.completed', 'role:user', 'permission:export-leads'])
+    ->name('exports.download');
+
+Route::get('/notifications', [NotificationController::class, 'index'])
+    ->middleware(['auth', 'verified', 'active', 'onboarding.completed', 'role:user', 'throttle:web'])
+    ->name('notifications.index');
+
+Route::middleware(['auth', 'verified', 'active', 'onboarding.completed', 'role:user', 'permission:search-leads', 'throttle:web'])
     ->prefix('leads')
     ->name('leads.')
     ->group(function () {
         Route::get('/', [LeadController::class, 'index'])->name('index');
-        Route::post('/export', [LeadExportController::class, 'store'])->name('export')->middleware('permission:export-leads');
+        Route::post('/export', [LeadExportController::class, 'store'])->name('export')->middleware('permission:export-leads', 'throttle:export');
         Route::post('/{lead}/bookmark', [LeadBookmarkController::class, 'store'])->name('bookmark.store')->middleware('permission:bookmark-leads');
         Route::delete('/{lead}/bookmark', [LeadBookmarkController::class, 'destroy'])->name('bookmark.destroy')->middleware('permission:bookmark-leads');
         Route::patch('/{lead}/status', [LeadController::class, 'updateStatus'])->name('status.update');
@@ -78,7 +95,7 @@ Route::middleware(['auth', 'verified', 'active', 'onboarding.completed', 'role:u
         Route::get('/{lead}', [LeadController::class, 'show'])->name('show');
     });
 
-Route::middleware(['auth', 'verified', 'active', 'onboarding.completed', 'role:user', 'permission:manage-lists'])
+Route::middleware(['auth', 'verified', 'active', 'onboarding.completed', 'role:user', 'permission:manage-lists', 'throttle:web'])
     ->prefix('lists')
     ->name('lists.')
     ->group(function () {
@@ -92,7 +109,7 @@ Route::middleware(['auth', 'verified', 'active', 'onboarding.completed', 'role:u
         Route::delete('/{list}/leads/{lead}', [LeadListController::class, 'removeLead'])->name('leads.remove');
     });
 
-Route::middleware(['auth', 'active', 'onboarding.completed'])->group(function () {
+Route::middleware(['auth', 'active', 'onboarding.completed', 'throttle:web'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/profile/social/unlink', [ProfileController::class, 'unlinkSocial'])->name('profile.social.unlink');
@@ -108,10 +125,11 @@ Route::middleware(['auth', 'active', 'onboarding.completed'])->group(function ()
     });
 });
 
-Route::middleware(['auth', 'active', 'onboarding.completed', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'active', 'onboarding.completed', 'role:admin', 'throttle:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', AdminDashboardController::class)->name('dashboard');
     Route::resource('users', AdminUserController::class)->only(['index', 'edit', 'update']);
     Route::middleware('permission:manage-lead-sources')->group(function () {
+        Route::post('lead-sources/import-file', [LeadSourceController::class, 'importFile'])->name('lead-sources.import-file');
         Route::post('lead-sources/{leadSource}/pause', [LeadSourceController::class, 'pause'])->name('lead-sources.pause');
         Route::post('lead-sources/{leadSource}/sync', [LeadSourceController::class, 'sync'])->name('lead-sources.sync');
         Route::resource('lead-sources', LeadSourceController::class)->only(['index', 'create', 'store', 'show', 'edit', 'update']);
@@ -135,6 +153,7 @@ Route::middleware(['auth', 'active', 'onboarding.completed', 'role:admin'])->pre
         Route::put('/', [AdminSettingController::class, 'update'])->name('update');
     });
     Route::get('notifications', [AdminNotificationController::class, 'index'])->name('notifications.index');
+    Route::middleware('permission:view-activity-log')->get('activity-log', [AdminActivityLogController::class, 'index'])->name('activity-log.index');
     Route::middleware('permission:manage-users')->group(function () {
         Route::get('roles', [AdminRoleController::class, 'index'])->name('roles.index');
         Route::get('roles/{role}/edit', [AdminRoleController::class, 'edit'])->name('roles.edit');

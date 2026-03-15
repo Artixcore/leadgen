@@ -70,6 +70,11 @@
                                 {{ __('Settings') }}
                             </x-nav-link>
                         @endcan
+                        @can('view-activity-log')
+                            <x-nav-link :href="route('admin.activity-log.index')" :active="request()->routeIs('admin.activity-log.*')">
+                                {{ __('Activity Log') }}
+                            </x-nav-link>
+                        @endcan
                     @endrole
                     @role('user')
                         <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
@@ -88,6 +93,12 @@
                                 {{ __('Lists') }}
                             </x-nav-link>
                         @endcan
+                        <x-nav-link :href="route('exports.index')" :active="request()->routeIs('exports.*')">
+                            {{ __('Export history') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('notifications.index')" :active="request()->routeIs('notifications.*')">
+                            {{ __('Notifications') }}
+                        </x-nav-link>
                     @endrole
                     <x-nav-link :href="route('billing.index')" :active="request()->routeIs('billing.*')">
                         {{ __('Billing') }}
@@ -134,7 +145,7 @@
 
             <!-- Hamburger -->
             <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
+                <button type="button" @click="open = ! open" class="inline-flex items-center justify-center p-3 min-h-[44px] min-w-[44px] rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -181,10 +192,21 @@
                 @can('manage-settings')
                     <x-responsive-nav-link :href="route('admin.settings.index')" :active="request()->routeIs('admin.settings.*')">{{ __('Settings') }}</x-responsive-nav-link>
                 @endcan
+                @can('view-activity-log')
+                    <x-responsive-nav-link :href="route('admin.activity-log.index')" :active="request()->routeIs('admin.activity-log.*')">{{ __('Activity Log') }}</x-responsive-nav-link>
+                @endcan
             @endrole
             @role('user')
                 <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">{{ __('Dashboard') }}</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('analytics.index')" :active="request()->routeIs('analytics.*')">{{ __('Analytics') }}</x-responsive-nav-link>
+                @can('search-leads')
+                    <x-responsive-nav-link :href="route('leads.index')" :active="request()->routeIs('leads.*')">{{ __('Leads') }}</x-responsive-nav-link>
+                @endcan
+                @can('manage-lists')
+                    <x-responsive-nav-link :href="route('lists.index')" :active="request()->routeIs('lists.*')">{{ __('Lists') }}</x-responsive-nav-link>
+                @endcan
+                <x-responsive-nav-link :href="route('exports.index')" :active="request()->routeIs('exports.*')">{{ __('Export history') }}</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('notifications.index')" :active="request()->routeIs('notifications.*')">{{ __('Notifications') }}</x-responsive-nav-link>
             @endrole
             <x-responsive-nav-link :href="route('billing.index')" :active="request()->routeIs('billing.*')">
                 {{ __('Billing') }}

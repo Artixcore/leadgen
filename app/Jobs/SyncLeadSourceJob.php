@@ -35,13 +35,20 @@ class SyncLeadSourceJob implements ShouldQueue
 
         try {
             $rows = $this->fetchRawData();
-            foreach ($rows as $index => $raw) {
-                LeadImportRow::create([
-                    'lead_import_run_id' => $run->id,
-                    'row_index' => $index,
-                    'raw_data' => $raw,
-                    'status' => ImportRowStatus::Pending,
-                ]);
+            $chunkSize = 500;
+            foreach (array_chunk($rows, $chunkSize, true) as $chunk) {
+                $toInsert = [];
+                foreach ($chunk as $index => $raw) {
+                    $toInsert[] = [
+                        'lead_import_run_id' => $run->id,
+                        'row_index' => $index,
+                        'raw_data' => json_encode($raw),
+                        'status' => ImportRowStatus::Pending->value,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+                LeadImportRow::insert($toInsert);
             }
             $run->update(['stats' => array_merge($run->stats ?? [], ['total' => count($rows)])]);
             $this->leadSource->update(['last_sync_at' => now()]);
@@ -63,7 +70,7 @@ class SyncLeadSourceJob implements ShouldQueue
      */
     private function fetchRawData(): array
     {
-        $config = $this->leadSource->config ?? [];
+        $config = $this->leadSource->getMergedConfig();
         if (isset($config['sample_rows']) && is_array($config['sample_rows'])) {
             return $config['sample_rows'];
         }

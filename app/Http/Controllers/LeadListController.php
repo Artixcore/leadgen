@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AddLeadToListRequest;
+use App\Http\Requests\ShareLeadListRequest;
 use App\Http\Requests\StoreLeadListRequest;
 use App\Http\Requests\UpdateLeadListRequest;
 use App\Models\Lead;
@@ -9,7 +11,6 @@ use App\Models\LeadList;
 use App\Models\User;
 use App\Services\SubscriptionService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class LeadListController extends Controller
@@ -94,17 +95,11 @@ class LeadListController extends Controller
         return redirect()->route('lists.index')->with('status', __('List deleted.'));
     }
 
-    public function addLead(Request $request, Lead $lead): RedirectResponse
+    public function addLead(AddLeadToListRequest $request, Lead $lead): RedirectResponse
     {
         $this->authorize('view', $lead);
 
-        if (! request()->user()->can('manage-lists')) {
-            abort(403);
-        }
-
-        $request->validate(['list_id' => ['required', 'integer', 'exists:lead_lists,id']]);
-
-        $list = LeadList::where('id', $request->list_id)->where('user_id', request()->user()->id)->firstOrFail();
+        $list = LeadList::where('id', $request->validated('list_id'))->where('user_id', $request->user()->id)->firstOrFail();
         $list->leads()->syncWithoutDetaching([$lead->id]);
         $list->logActivity('lead_added', request()->user()->id, 'lead', $lead->id);
 
@@ -125,15 +120,11 @@ class LeadListController extends Controller
         return back()->with('status', __('Lead removed from list.'));
     }
 
-    public function share(Request $request, LeadList $list): RedirectResponse
+    public function share(ShareLeadListRequest $request, LeadList $list): RedirectResponse
     {
         $this->authorize('update', $list);
 
-        $request->validate([
-            'email' => ['required', 'email', 'exists:users,email'],
-        ]);
-
-        $shareWithUser = User::where('email', $request->email)->firstOrFail();
+        $shareWithUser = User::where('email', $request->validated('email'))->firstOrFail();
         if ($shareWithUser->id === $list->user_id) {
             return back()->with('error', __('You cannot share a list with yourself.'));
         }

@@ -35,7 +35,7 @@ class ExportLoggingTest extends TestCase
             'lead_ids' => [$lead->id],
         ]);
 
-        $response->assertOk();
+        $response->assertRedirect();
         $this->assertSame(1, Export::count());
         $export = Export::first();
         $this->assertSame($user->id, $export->user_id);

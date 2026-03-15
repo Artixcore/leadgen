@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreCountryRequest;
 use App\Http\Requests\Admin\UpdateCountryRequest;
 use App\Models\Country;
+use App\Services\ActivityLogService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -29,7 +30,9 @@ class CountryController extends Controller
 
     public function store(StoreCountryRequest $request): RedirectResponse
     {
-        Country::query()->create($request->validated());
+        $country = Country::query()->create($request->validated());
+
+        app(ActivityLogService::class)->log($request->user(), 'country.created', $country);
 
         return redirect()->route('admin.countries.index')->with('status', __('Country created.'));
     }
@@ -52,12 +55,16 @@ class CountryController extends Controller
     {
         $country->update($request->validated());
 
+        app(ActivityLogService::class)->log($request->user(), 'country.updated', $country);
+
         return redirect()->route('admin.countries.show', $country)->with('status', __('Country updated.'));
     }
 
     public function destroy(Country $country): RedirectResponse
     {
         $this->authorize('delete', $country);
+
+        app(ActivityLogService::class)->log(request()->user(), 'country.deleted', $country);
 
         $country->delete();
 

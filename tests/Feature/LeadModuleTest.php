@@ -244,9 +244,12 @@ class LeadModuleTest extends TestCase
             'list_id' => $list->id,
         ]);
 
-        $response->assertOk();
-        $response->assertHeader('content-type', 'text/csv; charset=UTF-8');
-        $this->assertStringContainsString($lead->email, $response->streamedContent());
+        $response->assertRedirect();
+        $response->assertSessionHas('status');
+        $this->assertSame(1, Export::where('user_id', $user->id)->count());
+        $export = Export::where('user_id', $user->id)->latest()->first();
+        $this->assertSame('completed', $export->status);
+        $this->assertSame(1, $export->row_count);
     }
 
     public function test_export_leads_downloads_csv_and_increments_export_count(): void
@@ -260,13 +263,13 @@ class LeadModuleTest extends TestCase
             'lead_ids' => [$lead->id],
         ]);
 
-        $response->assertOk();
-        $response->assertHeader('content-type', 'text/csv; charset=UTF-8');
+        $response->assertRedirect();
+        $response->assertSessionHas('status');
 
+        $this->assertSame(1, Export::where('user_id', $user->id)->count());
         $usage = PlanUsage::where('user_id', $user->id)->where('period', PlanUsage::currentPeriod())->first();
         $this->assertNotNull($usage);
         $this->assertSame(1, $usage->exports_count);
-        $this->assertSame(1, Export::where('user_id', $user->id)->count());
     }
 
     public function test_duplicate_detection_sets_is_duplicate_when_email_matches(): void

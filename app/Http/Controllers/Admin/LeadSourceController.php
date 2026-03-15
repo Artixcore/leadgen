@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreLeadSourceRequest;
 use App\Http\Requests\Admin\UpdateLeadSourceRequest;
+use App\Http\Requests\StoreImportedFileRequest;
+use App\Jobs\ProcessFileImportJob;
 use App\Jobs\SyncLeadSourceJob;
 use App\LeadSourceStatus;
 use App\Models\LeadSource;
+use App\Services\ActivityLogService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -41,7 +44,9 @@ class LeadSourceController extends Controller
 
     public function store(StoreLeadSourceRequest $request): RedirectResponse
     {
-        LeadSource::create($request->validated());
+        $leadSource = LeadSource::create($request->validated());
+
+        app(ActivityLogService::class)->log($request->user(), 'lead_source.created', $leadSource);
 
         return redirect()
             ->route('admin.lead-sources.index')
@@ -72,6 +77,8 @@ class LeadSourceController extends Controller
     {
         $leadSource->update($request->validated());
 
+        app(ActivityLogService::class)->log($request->user(), 'lead_source.updated', $leadSource);
+
         return redirect()
             ->route('admin.lead-sources.show', $leadSource)
             ->with('status', __('Lead source updated.'));
@@ -85,6 +92,10 @@ class LeadSourceController extends Controller
             ? LeadSourceStatus::Inactive
             : LeadSourceStatus::Active;
         $leadSource->update(['status' => $newStatus]);
+
+        app(ActivityLogService::class)->log(request()->user(), 'lead_source.paused', $leadSource, [
+            'new_status' => $newStatus->value,
+        ]);
 
         $message = $newStatus === LeadSourceStatus::Inactive
             ? __('Lead source paused.')
@@ -101,8 +112,29 @@ class LeadSourceController extends Controller
 
         SyncLeadSourceJob::dispatch($leadSource);
 
+        app(ActivityLogService::class)->log(request()->user(), 'lead_source.synced', $leadSource);
+
         return redirect()
             ->back()
             ->with('status', __('Sync job queued.'));
+    }
+
+    /**
+     * Store an uploaded CSV file and queue it for import.
+     */
+    public function importFile(StoreImportedFileRequest $request): RedirectResponse
+    {
+        $file = $request->file('file');
+        $path = $file->store('imports', 'local');
+
+        ProcessFileImportJob::dispatch(
+            $path,
+            $request->validated('lead_source_id'),
+            $request->user()->id
+        );
+
+        return redirect()
+            ->back()
+            ->with('status', __('Import file queued. You will be notified when processing completes.'));
     }
 }

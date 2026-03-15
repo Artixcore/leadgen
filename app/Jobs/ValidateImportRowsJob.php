@@ -7,6 +7,7 @@ use App\Models\Lead;
 use App\Models\LeadImportRun;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Str;
 
 class ValidateImportRowsJob implements ShouldQueue
 {
@@ -83,10 +84,24 @@ class ValidateImportRowsJob implements ShouldQueue
             }
             $mapped = $fieldMap[$key] ?? $key;
             if (in_array($mapped, $allowedKeys, true)) {
-                $out[$mapped] = $value;
+                $out[$mapped] = $this->sanitizeValue($value);
             }
         }
 
         return $out;
+    }
+
+    /**
+     * Sanitize a scalar value for safe storage (XSS prevention).
+     */
+    private function sanitizeValue(mixed $value): mixed
+    {
+        if (is_string($value)) {
+            $value = strip_tags($value);
+
+            return Str::limit($value, 65535);
+        }
+
+        return $value;
     }
 }

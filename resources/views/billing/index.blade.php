@@ -5,21 +5,19 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            @if (session('checkout') === 'success')
-                <div class="rounded-md bg-green-50 p-4 text-green-800">
-                    {{ __('Your subscription has been updated successfully.') }}
-                </div>
-            @endif
-            @if (session('error'))
-                <div class="rounded-md bg-red-50 p-4 text-red-800">
-                    {{ session('error') }}
-                </div>
-            @endif
+    <div class="space-y-6">
+        @if (session('checkout') === 'success')
+            <div class="rounded-md bg-green-50 p-4 text-green-800">
+                {{ __('Your subscription has been updated successfully.') }}
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="rounded-md bg-red-50 p-4 text-red-800">
+                {{ session('error') }}
+            </div>
+        @endif
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
+        <x-card>
                     <h3 class="text-lg font-medium text-gray-900">{{ __('Current Plan') }}</h3>
                     <p class="mt-1 text-gray-600">{{ $plan->name }}</p>
                     @if ($subscription)
@@ -48,8 +46,6 @@
                             {{ __('Billing History') }}
                         </a>
                     </div>
-                </div>
-            </div>
-        </div>
+        </x-card>
     </div>
 </x-app-layout>

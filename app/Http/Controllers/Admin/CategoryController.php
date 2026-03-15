@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreCategoryRequest;
 use App\Http\Requests\Admin\UpdateCategoryRequest;
 use App\Models\Category;
+use App\Services\ActivityLogService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -29,7 +30,9 @@ class CategoryController extends Controller
 
     public function store(StoreCategoryRequest $request): RedirectResponse
     {
-        Category::query()->create($request->validated());
+        $category = Category::query()->create($request->validated());
+
+        app(ActivityLogService::class)->log($request->user(), 'category.created', $category);
 
         return redirect()->route('admin.categories.index')->with('status', __('Category created.'));
     }
@@ -52,12 +55,16 @@ class CategoryController extends Controller
     {
         $category->update($request->validated());
 
+        app(ActivityLogService::class)->log($request->user(), 'category.updated', $category);
+
         return redirect()->route('admin.categories.show', $category)->with('status', __('Category updated.'));
     }
 
     public function destroy(Category $category): RedirectResponse
     {
         $this->authorize('delete', $category);
+
+        app(ActivityLogService::class)->log(request()->user(), 'category.deleted', $category);
 
         $category->delete();
 

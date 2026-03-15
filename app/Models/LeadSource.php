@@ -26,6 +26,7 @@ class LeadSource extends Model
         'import_frequency',
         'validation_rules',
         'config',
+        'config_encrypted',
         'created_by',
         'updated_by',
     ];
@@ -42,7 +43,21 @@ class LeadSource extends Model
             'last_sync_at' => 'datetime',
             'validation_rules' => 'array',
             'config' => 'array',
+            'config_encrypted' => 'encrypted:array',
         ];
+    }
+
+    /**
+     * Get config merged with decrypted sensitive config (e.g. API keys).
+     *
+     * @return array<string, mixed>
+     */
+    public function getMergedConfig(): array
+    {
+        return array_merge(
+            (array) ($this->config ?? []),
+            (array) ($this->config_encrypted ?? [])
+        );
     }
 
     public function leads(): HasMany

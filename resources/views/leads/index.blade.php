@@ -5,22 +5,20 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if (session('status'))
-                <div class="mb-4 rounded-md bg-green-50 p-4 text-sm text-green-800">
-                    {{ session('status') }}
-                </div>
-            @endif
-            @if (session('error'))
-                <div class="mb-4 rounded-md bg-red-50 p-4 text-sm text-red-800">
-                    {{ session('error') }}
-                </div>
-            @endif
+    <div class="space-y-6">
+        @if (session('status'))
+            <div class="rounded-md bg-green-50 p-4 text-sm text-green-800">
+                {{ session('status') }}
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="rounded-md bg-red-50 p-4 text-sm text-red-800">
+                {{ session('error') }}
+            </div>
+        @endif
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                <div class="p-6">
-                    <form method="GET" action="{{ route('leads.index') }}" class="space-y-4">
+        <x-card>
+            <form method="GET" action="{{ route('leads.index') }}" class="space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             <div>
                                 <label for="q" class="block text-sm font-medium text-gray-700">{{ __('Search') }}</label>
@@ -190,11 +188,11 @@
                         @endif
                     @endcan
                 </div>
-            </div>
+            </form>
+        </x-card>
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    @can('export-leads')
+        <x-card>
+            @can('export-leads')
                         <form method="POST" action="{{ route('leads.export') }}" id="export-form" class="mb-4 flex gap-2 items-center">
                             @csrf
                             <select name="format" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
@@ -292,11 +290,9 @@
                         </table>
                     </div>
 
-                    <div class="mt-4">
-                        {{ $leads->links() }}
-                    </div>
-                </div>
+            <div class="mt-4">
+                {{ $leads->links() }}
             </div>
-        </div>
+        </x-card>
     </div>
 </x-app-layout>

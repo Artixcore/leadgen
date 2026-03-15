@@ -5,9 +5,8 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
-            {{-- Stat cards --}}
+    <div class="space-y-6">
+        {{-- Stat cards --}}
             <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-5">
                     <p class="text-sm font-medium text-gray-500 truncate">{{ __('Total users') }}</p>
@@ -211,6 +210,5 @@
                     </div>
                 </div>
             </div>
-        </div>
     </div>
 </x-app-layout>

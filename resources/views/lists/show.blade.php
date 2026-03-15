@@ -30,22 +30,20 @@
         </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if (session('status'))
-                <div class="mb-4 rounded-md bg-green-50 p-4 text-sm text-green-800">
-                    {{ session('status') }}
-                </div>
-            @endif
-            @if (session('error'))
-                <div class="mb-4 rounded-md bg-red-50 p-4 text-sm text-red-800">
-                    {{ session('error') }}
-                </div>
-            @endif
+    <div class="space-y-6">
+        @if (session('status'))
+            <div class="rounded-md bg-green-50 p-4 text-sm text-green-800">
+                {{ session('status') }}
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="rounded-md bg-red-50 p-4 text-sm text-red-800">
+                {{ session('error') }}
+            </div>
+        @endif
 
-            @can('update', $list)
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                <div class="p-6">
+        @can('update', $list)
+            <x-card>
                     <form method="POST" action="{{ route('lists.update', $list) }}" class="space-y-4">
                         @csrf
                         @method('PATCH')
@@ -70,23 +68,19 @@
                             @enderror
                         </div>
                     </form>
-                </div>
-            </div>
-            @else
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                <div class="p-6">
+            </x-card>
+        @else
+            <x-card>
                     @if ($list->notes)
                         <p class="text-sm text-gray-700 whitespace-pre-line">{{ $list->notes }}</p>
                     @endif
-                </div>
-            </div>
-            @endcan
+            </x-card>
+        @endcan
 
-            @can('update', $list)
+        @can('update', $list)
             @if ($list->sharedWithUsers->isNotEmpty())
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                    <div class="p-6">
-                        <h3 class="text-sm font-medium text-gray-900 mb-2">{{ __('Shared with') }}</h3>
+                <x-card>
+                    <h3 class="text-sm font-medium text-gray-900 mb-2">{{ __('Shared with') }}</h3>
                         <ul class="space-y-1 text-sm">
                             @foreach ($list->sharedWithUsers as $sharedUser)
                                 <li class="flex items-center justify-between gap-2">
@@ -110,13 +104,10 @@
                                 {{ __('Share') }}
                             </button>
                         </form>
-                    </div>
-                </div>
-            </div>
+                </x-card>
             @else
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                    <div class="p-6">
-                        <h3 class="text-sm font-medium text-gray-900 mb-2">{{ __('Share list') }}</h3>
+                <x-card>
+                    <h3 class="text-sm font-medium text-gray-900 mb-2">{{ __('Share list') }}</h3>
                         <form method="POST" action="{{ route('lists.share', $list) }}" class="flex gap-2 items-end">
                             @csrf
                             <div class="min-w-[200px]">
@@ -128,15 +119,15 @@
                                 {{ __('Share') }}
                             </button>
                         </form>
-                    </div>
-                </div>
+                </x-card>
             @endif
-            @endcan
+        @endcan
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <h3 class="text-sm font-medium text-gray-900 mb-4">{{ __('Leads in list') }} ({{ $leads->total() }})</h3>
-                    <div class="overflow-x-auto">
+        <x-card>
+            <x-slot name="header">
+                <h3 class="text-sm font-medium text-gray-900">{{ __('Leads in list') }} ({{ $leads->total() }})</h3>
+            </x-slot>
+            <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead>
                                 <tr>
@@ -173,16 +164,16 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="mt-4">
-                        {{ $leads->links() }}
-                    </div>
-                </div>
+            <div class="mt-4">
+                {{ $leads->links() }}
             </div>
+        </x-card>
 
-            @if ($activities->isNotEmpty())
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mt-6">
-                    <div class="p-6">
-                        <h3 class="text-sm font-medium text-gray-900 mb-4">{{ __('Activity') }}</h3>
+        @if ($activities->isNotEmpty())
+            <x-card>
+                <x-slot name="header">
+                    <h3 class="text-sm font-medium text-gray-900">{{ __('Activity') }}</h3>
+                </x-slot>
                         <ul class="space-y-2 text-sm">
                             @foreach ($activities as $activity)
                                 <li class="text-gray-600">
@@ -215,19 +206,17 @@
                                 </li>
                             @endforeach
                         </ul>
-                    </div>
-                </div>
-            @endif
+            </x-card>
+        @endif
 
-            @can('update', $list)
-            <div class="mt-6">
+        @can('update', $list)
+            <p>
                 <form method="POST" action="{{ route('lists.destroy', $list) }}" class="inline" onsubmit="return confirm('{{ __('Delete this list? Leads will not be deleted.') }}');">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="text-sm text-red-600 hover:text-red-800">{{ __('Delete list') }}</button>
                 </form>
-            </div>
-            @endcan
-        </div>
+            </p>
+        @endcan
     </div>
 </x-app-layout>

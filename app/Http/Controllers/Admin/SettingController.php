@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\UpdateSettingRequest;
 use App\Models\Setting;
+use App\Services\ActivityLogService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class SettingController extends Controller
@@ -21,17 +22,15 @@ class SettingController extends Controller
         return view('admin.settings.index', ['settings' => $settings]);
     }
 
-    public function update(Request $request): RedirectResponse
+    public function update(UpdateSettingRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'app_name' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'contact_email' => ['sometimes', 'nullable', 'email', 'max:255'],
-            'maintenance_mode' => ['sometimes', 'in:0,1'],
-        ]);
-
-        foreach ($validated as $key => $value) {
+        foreach ($request->validated() as $key => $value) {
             Setting::set($key, $value);
         }
+
+        app(ActivityLogService::class)->log($request->user(), 'setting.updated', null, [
+            'keys' => array_keys($request->validated()),
+        ]);
 
         return redirect()->route('admin.settings.index')->with('status', __('Settings saved.'));
     }

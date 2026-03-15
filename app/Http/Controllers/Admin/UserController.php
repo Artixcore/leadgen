@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateUserStatusRequest;
 use App\Models\User;
+use App\Services\ActivityLogService;
 use App\UserStatus;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -45,6 +46,10 @@ class UserController extends Controller
             'status' => UserStatus::from($request->validated('status')),
             'status_changed_at' => now(),
             'status_changed_by' => $request->user()->id,
+        ]);
+
+        app(ActivityLogService::class)->log($request->user(), 'user.status_changed', $user, [
+            'status' => $request->validated('status'),
         ]);
 
         return redirect()

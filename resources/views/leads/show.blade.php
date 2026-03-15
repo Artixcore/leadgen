@@ -30,16 +30,14 @@
         </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if (session('status'))
-                <div class="mb-4 rounded-md bg-green-50 p-4 text-sm text-green-800">
-                    {{ session('status') }}
-                </div>
-            @endif
+    <div class="space-y-6">
+        @if (session('status'))
+            <div class="rounded-md bg-green-50 p-4 text-sm text-green-800">
+                {{ session('status') }}
+            </div>
+        @endif
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                <div class="p-6">
+        <x-card>
                     <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4">
                         <div><dt class="text-sm font-medium text-gray-500">{{ __('Full name') }}</dt><dd class="mt-1 text-sm text-gray-900">{{ $lead->full_name ?? '—' }}</dd></div>
                         <div><dt class="text-sm font-medium text-gray-500">{{ __('Job title') }}</dt><dd class="mt-1 text-sm text-gray-900">{{ $lead->job_title ?? '—' }}</dd></div>
@@ -120,12 +118,10 @@
                             </form>
                         </dd>
                     </div>
-                </div>
-            </div>
+        </x-card>
 
-            @can('manage-lists')
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                    <div class="p-6">
+        @can('manage-lists')
+            <x-card>
                         <h3 class="text-sm font-medium text-gray-900 mb-2">{{ __('Add to list') }}</h3>
                         <form method="POST" action="{{ route('leads.lists.add', $lead) }}" class="flex gap-2 flex-wrap items-end">
                             @csrf
@@ -144,13 +140,13 @@
                         @if ($userLists->isEmpty())
                             <p class="mt-2 text-sm text-gray-500">{{ __('You have no lists yet.') }} <a href="{{ route('lists.index') }}" class="text-indigo-600 hover:underline">{{ __('Create a list') }}</a></p>
                         @endif
-                    </div>
-                </div>
-            @endcan
+            </x-card>
+        @endcan
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                <div class="p-6">
-                    <h3 class="text-sm font-medium text-gray-900 mb-2">{{ __('Follow-up reminders') }}</h3>
+        <x-card>
+            <x-slot name="header">
+                <h3 class="text-sm font-medium text-gray-900">{{ __('Follow-up reminders') }}</h3>
+            </x-slot>
                     <form method="POST" action="{{ route('leads.reminders.store', $lead) }}" class="mb-4 flex flex-wrap gap-2 items-end">
                         @csrf
                         <div>
@@ -181,12 +177,12 @@
                             <li class="text-sm text-gray-500">{{ __('No reminders.') }}</li>
                         @endforelse
                     </ul>
-                </div>
-            </div>
+        </x-card>
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <h3 class="text-sm font-medium text-gray-900 mb-2">{{ __('My notes') }}</h3>
+        <x-card>
+            <x-slot name="header">
+                <h3 class="text-sm font-medium text-gray-900">{{ __('My notes') }}</h3>
+            </x-slot>
                     <form method="POST" action="{{ route('leads.notes.store', $lead) }}" class="mb-4">
                         @csrf
                         <textarea name="body" rows="3" required maxlength="65535" placeholder="{{ __('Add a note...') }}"
@@ -212,8 +208,6 @@
                             <li class="text-sm text-gray-500">{{ __('No notes yet.') }}</li>
                         @endforelse
                     </ul>
-                </div>
-            </div>
-        </div>
+        </x-card>
     </div>
 </x-app-layout>

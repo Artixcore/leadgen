@@ -15,15 +15,21 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
+        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-50">
             <div>
-                <a href="/">
+                <a href="{{ url('/') }}">
                     <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
                 </a>
             </div>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
+            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-sm sm:rounded-lg border border-gray-200">
                 {{ $slot }}
+            </div>
+
+            <div class="mt-6 text-center text-sm text-gray-600">
+                <a href="{{ url('/') }}" class="hover:text-gray-900">{{ __('Home') }}</a>
+                <span class="mx-2">·</span>
+                <a href="{{ route('pricing') }}" class="hover:text-gray-900">{{ __('Pricing') }}</a>
             </div>
         </div>
     </body>

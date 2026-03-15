@@ -13,6 +13,10 @@ class NotifyMatchingFiltersJob implements ShouldQueue
 {
     use Queueable;
 
+    public int $tries = 3;
+
+    public array $backoff = [30, 120];
+
     public function __construct(
         public LeadImportRun $run,
         /** @var array<int, int> */

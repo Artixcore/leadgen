@@ -14,6 +14,8 @@ class DeduplicateImportRowsJob implements ShouldQueue
 
     public int $tries = 2;
 
+    public array $backoff = [60, 300];
+
     public function __construct(
         public LeadImportRun $run
     ) {}

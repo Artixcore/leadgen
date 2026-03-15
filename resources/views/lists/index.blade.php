@@ -8,23 +8,21 @@
         </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if (session('status'))
-                <div class="mb-4 rounded-md bg-green-50 p-4 text-sm text-green-800">
-                    {{ session('status') }}
-                </div>
-            @endif
-            @if (session('error'))
-                <div class="mb-4 rounded-md bg-red-50 p-4 text-sm text-red-800">
-                    {{ session('error') }}
-                </div>
-            @endif
+    <div class="space-y-6">
+        @if (session('status'))
+            <div class="rounded-md bg-green-50 p-4 text-sm text-green-800">
+                {{ session('status') }}
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="rounded-md bg-red-50 p-4 text-sm text-red-800">
+                {{ session('error') }}
+            </div>
+        @endif
 
-            @if ($canCreateList)
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                    <div class="p-6">
-                        <h3 class="text-sm font-medium text-gray-900 mb-2">{{ __('Create new list') }}</h3>
+        @if ($canCreateList)
+            <x-card>
+                <h3 class="text-sm font-medium text-gray-900 mb-2">{{ __('Create new list') }}</h3>
                         <form method="POST" action="{{ route('lists.store') }}" class="flex gap-2 items-end">
                             @csrf
                             <div class="min-w-[200px]">
@@ -38,13 +36,12 @@
                                 {{ __('Create') }}
                             </button>
                         </form>
-                    </div>
-                </div>
-            @endif
+            </x-card>
+        @endif
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <table class="min-w-full divide-y divide-gray-200">
+        <x-card>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
                         <thead>
                             <tr>
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Name') }}</th>
@@ -74,9 +71,8 @@
                                 </tr>
                             @endforelse
                         </tbody>
-                    </table>
-                </div>
+                </table>
             </div>
-        </div>
+        </x-card>
     </div>
 </x-app-layout>

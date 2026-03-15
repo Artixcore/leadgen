@@ -28,6 +28,7 @@ class RoleAndPermissionSeeder extends Seeder
             'manage-settings',
             'manage-queue-jobs',
             'view-reports',
+            'view-activity-log',
         ];
 
         $userPermissions = [

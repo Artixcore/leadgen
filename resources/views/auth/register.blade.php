@@ -50,6 +50,11 @@
         </div>
     </form>
 
+    <p class="mt-6 text-center text-sm text-gray-600">
+        {{ __('Already have an account?') }}
+        <a href="{{ route('login') }}" class="font-medium text-gray-900 hover:underline">{{ __('Log in') }}</a>
+    </p>
+
     @if (config('services.google.client_id'))
         <div class="mt-6">
             <div class="relative">

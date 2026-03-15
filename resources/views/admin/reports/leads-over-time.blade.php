@@ -6,7 +6,7 @@
         </div>
     </x-slot>
 
-    <div class="py-12">
+    <div class="space-y-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 mb-6">
                 <form method="GET" action="{{ route('admin.reports.leads-over-time') }}" class="flex flex-wrap gap-4 items-end">

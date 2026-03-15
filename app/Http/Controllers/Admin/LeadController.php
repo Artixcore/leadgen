@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateLeadRequest;
 use App\Models\Lead;
 use App\Models\LeadSource;
+use App\Services\ActivityLogService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -64,6 +65,8 @@ class LeadController extends Controller
     public function update(UpdateLeadRequest $request, Lead $lead): RedirectResponse
     {
         $lead->update($request->validated());
+
+        app(ActivityLogService::class)->log($request->user(), 'lead.updated', $lead);
 
         return redirect()->route('admin.leads.show', $lead)->with('status', __('Lead updated.'));
     }

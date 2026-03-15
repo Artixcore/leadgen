@@ -6,6 +6,7 @@ use App\Http\Requests\CheckoutPlanRequest;
 use App\Models\Plan;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -26,7 +27,9 @@ class BillingController extends Controller
 
     public function plans(Request $request): View
     {
-        $plans = Plan::where('is_active', true)->orderBy('sort_order')->get();
+        $plans = Cache::remember('billing.plans', now()->addMinutes(10), function () {
+            return Plan::where('is_active', true)->orderBy('sort_order')->get();
+        });
         $currentPlan = $request->user()->currentPlan();
 
         return view('billing.plans', [

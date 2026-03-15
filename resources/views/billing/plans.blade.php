@@ -5,26 +5,25 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if (session('error'))
-                <div class="mb-6 rounded-md bg-red-50 p-4 text-red-800">
-                    {{ session('error') }}
-                </div>
-            @endif
-            @if (session('checkout') === 'cancelled')
-                <div class="mb-6 rounded-md bg-gray-50 p-4 text-gray-700">
-                    {{ __('Checkout was cancelled.') }}
-                </div>
-            @endif
-
-            <div class="mb-6">
-                <a href="{{ route('billing.index') }}" class="text-sm text-gray-600 hover:text-gray-900">
-                    &larr; {{ __('Back to Billing') }}
-                </a>
+    <div class="space-y-6">
+        @if (session('error'))
+            <div class="rounded-md bg-red-50 p-4 text-red-800">
+                {{ session('error') }}
             </div>
+        @endif
+        @if (session('checkout') === 'cancelled')
+            <div class="rounded-md bg-gray-50 p-4 text-gray-700">
+                {{ __('Checkout was cancelled.') }}
+            </div>
+        @endif
 
-            <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <p>
+            <a href="{{ route('billing.index') }}" class="text-sm text-gray-600 hover:text-gray-900">
+                &larr; {{ __('Back to Billing') }}
+            </a>
+        </p>
+
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 @foreach ($plans as $plan)
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border-2 {{ $currentPlan->id === $plan->id ? 'border-gray-800' : 'border-gray-200' }}">
                         <div class="p-6">
@@ -65,7 +64,6 @@
                         </div>
                     </div>
                 @endforeach
-            </div>
         </div>
     </div>
 </x-app-layout>
