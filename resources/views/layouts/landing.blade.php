@@ -61,6 +61,10 @@
                             @endif
                         @endguest
                     </div>
+                    <div class="mt-4 text-center text-sm text-gray-600">
+                        <p>A product of Artixcore</p>
+                        <p class="mt-1">&copy; {{ date('Y') }} Artixcore. All rights reserved.</p>
+                    </div>
                 </div>
             </footer>
         </div>

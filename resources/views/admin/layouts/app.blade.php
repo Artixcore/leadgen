@@ -12,6 +12,13 @@
     <link href="{{ asset('vendor/admin-template/css/modern.css') }}" rel="stylesheet">
     @stack('styles')
 </head>
+
+
+
+
+
+
+
 <body>
 
     <div class="wrapper">
