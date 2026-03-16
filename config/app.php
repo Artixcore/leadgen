@@ -56,6 +56,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application Logo URL
+    |--------------------------------------------------------------------------
+    |
+    | This URL is used for the application logo in navbars, sidebar, and favicon.
+    | Leave empty to use the default SVG logo. Set in your ".env" as APP_LOGO_URL.
+    |
+    */
+
+    'logo_url' => env('APP_LOGO_URL', 'https://storaeall.s3.us-east-1.amazonaws.com/public/adsycraft-logo.png'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

@@ -2,6 +2,11 @@
     <a class="sidebar-toggle d-flex me-2" href="#" aria-label="{{ __('Toggle sidebar') }}">
         <i class="hamburger align-self-center"></i>
     </a>
+    @if(config('app.logo_url'))
+        <a class="d-flex align-items-center me-2" href="{{ route('admin.dashboard') }}" aria-label="{{ config('app.name') }}">
+            <img src="{{ config('app.logo_url') }}" alt="" style="height: 32px; width: auto;">
+        </a>
+    @endif
 
     <div class="navbar-collapse collapse">
         <ul class="navbar-nav ms-auto">

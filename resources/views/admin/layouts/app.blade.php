@@ -9,6 +9,11 @@
 
     <title>@yield('title', __('Admin')) - {{ config('app.name') }}</title>
 
+    @if(config('app.logo_url'))
+    <link rel="icon" type="image/png" href="{{ config('app.logo_url') }}">
+    <link rel="apple-touch-icon" href="{{ config('app.logo_url') }}">
+    @endif
+
     <link href="{{ asset('vendor/admin-template/css/modern.css') }}" rel="stylesheet">
     @stack('styles')
 </head>

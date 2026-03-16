@@ -1,8 +1,12 @@
 <nav id="sidebar" class="sidebar">
     <a class="sidebar-brand" href="{{ route('admin.dashboard') }}">
-        <svg>
-            <use xlink:href="#ion-ios-pulse-strong"></use>
-        </svg>
+        @if(config('app.logo_url'))
+            <img src="{{ config('app.logo_url') }}" alt="{{ config('app.name') }}" class="sidebar-brand-img" style="max-height: 40px; width: auto;">
+        @else
+            <svg>
+                <use xlink:href="#ion-ios-pulse-strong"></use>
+            </svg>
+        @endif
         {{ config('app.name') }}
     </a>
     <div class="sidebar-content">
