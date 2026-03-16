@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand navbar-theme">
+<nav class="navbar navbar-expand navbar-theme sticky-top">
     <a class="sidebar-toggle d-flex me-2" href="#" aria-label="{{ __('Toggle sidebar') }}">
         <i class="hamburger align-self-center"></i>
     </a>

@@ -14,7 +14,7 @@
     </head>
     <body class="font-sans antialiased text-gray-900 bg-gray-50">
         <div class="min-h-screen flex flex-col">
-            <header class="bg-white border-b border-gray-200">
+            <header class="fixed top-0 left-0 right-0 z-10 bg-white border-b border-gray-200">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between h-16">
                         <div class="flex items-center">
@@ -45,7 +45,7 @@
                 </div>
             </header>
 
-            <main class="flex-1">
+            <main class="flex-1 pt-16">
                 @yield('content')
             </main>
 
