@@ -7,27 +7,27 @@
         <ul class="navbar-nav ms-auto">
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('admin.notifications.index') }}" title="{{ __('Notifications') }}">
-                    <i class="align-middle fas fa-bell"></i>
+                    <svg class="align-middle" width="1em" height="1em" fill="currentColor" aria-hidden="true"><use xlink:href="#icon-bell"/></svg>
                 </a>
             </li>
             <li class="nav-item dropdown ms-lg-2">
                 <a class="nav-link dropdown-toggle position-relative" href="#" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="align-middle fas fa-cog"></i>
+                    <svg class="align-middle" width="1em" height="1em" fill="currentColor" aria-hidden="true"><use xlink:href="#icon-cog"/></svg>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                     <a class="dropdown-item" href="{{ route('profile.edit') }}">
-                        <i class="align-middle me-1 fas fa-fw fa-user"></i> {{ __('Profile') }}
+                        <svg class="align-middle me-1" width="1em" height="1em" fill="currentColor" aria-hidden="true"><use xlink:href="#icon-user"/></svg> {{ __('Profile') }}
                     </a>
                     @can('manage-settings')
                     <a class="dropdown-item" href="{{ route('admin.settings.index') }}">
-                        <i class="align-middle me-1 fas fa-fw fa-cogs"></i> {{ __('Settings') }}
+                        <svg class="align-middle me-1" width="1em" height="1em" fill="currentColor" aria-hidden="true"><use xlink:href="#icon-cog"/></svg> {{ __('Settings') }}
                     </a>
                     @endcan
                     <div class="dropdown-divider"></div>
                     <form method="POST" action="{{ route('logout') }}" class="d-inline">
                         @csrf
                         <button type="submit" class="dropdown-item">
-                            <i class="align-middle me-1 fas fa-fw fa-arrow-alt-circle-right"></i> {{ __('Sign out') }}
+                            <svg class="align-middle me-1" width="1em" height="1em" fill="currentColor" aria-hidden="true"><use xlink:href="#icon-sign-out"/></svg> {{ __('Sign out') }}
                         </button>
                     </form>
                 </div>
